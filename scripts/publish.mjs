@@ -19,9 +19,10 @@ export async function importEntry(repo,source,slug,opts={},update=false) {
   const old=present?JSON.parse(await fs.readFile(path.join(dest,'entry.json'),'utf8')):{};
   const title=opts.title??old.title;
   if(!title?.trim())throw Error('--title is required for a new entry.');
+  if(opts.date!==undefined&&!/^\d{4}-\d{2}-\d{2}$/.test(opts.date))throw Error('--date must be YYYY-MM-DD.');
   const stat=await fs.lstat(source);
   if(stat.isSymbolicLink())throw Error('Source cannot be a symlink.');
-  const meta={title,description:opts.description??old.description??'',date:old.date??new Date().toISOString().slice(0,10),updated:new Date().toISOString(),tags:opts.tags!==undefined?opts.tags.split(',').map(s=>s.trim()).filter(Boolean):old.tags??[],unlisted:opts.listed?false:opts.unlisted?true:old.unlisted??false};
+  const meta={title,description:opts.description??old.description??'',date:opts.date??old.date??new Date().toISOString().slice(0,10),updated:new Date().toISOString(),tags:opts.tags!==undefined?opts.tags.split(',').map(s=>s.trim()).filter(Boolean):old.tags??[],unlisted:opts.listed?false:opts.unlisted?true:old.unlisted??false};
   const parent=path.join(repo,'content');await fs.mkdir(parent,{recursive:true});
   const stage=await fs.mkdtemp(path.join(parent,'.import-'));
   try {
@@ -67,8 +68,8 @@ async function waitLive(config,sha,slug,expected) {
   throw Error(`Commit ${sha} pushed; live verification timed out. Inspect https://github.com/${config.repository}/actions before retrying.`);
 }
 async function main(){
-  const {values:o,positionals:p}=parseArgs({allowPositionals:true,options:{title:{type:'string'},description:{type:'string'},tags:{type:'string'},slug:{type:'string'},unlisted:{type:'boolean'},listed:{type:'boolean'},local:{type:'boolean'},help:{type:'boolean'}}});
-  if(o.help||!p.length){console.log('scratch publish <file-or-folder> --title "Title" [--slug slug] [--description text] [--tags a,b] [--unlisted] [--local]\nscratch update <slug> <file-or-folder> [--title text] [--listed|--unlisted] [--local]\n--local imports and builds without committing or publishing. Updates replace the entire entry folder.');return;}
+  const {values:o,positionals:p}=parseArgs({allowPositionals:true,options:{title:{type:'string'},description:{type:'string'},tags:{type:'string'},slug:{type:'string'},date:{type:'string'},unlisted:{type:'boolean'},listed:{type:'boolean'},local:{type:'boolean'},help:{type:'boolean'}}});
+  if(o.help||!p.length){console.log('scratch publish <file-or-folder> --title "Title" [--slug slug] [--description text] [--tags a,b] [--date YYYY-MM-DD] [--unlisted] [--local]\nscratch update <slug> <file-or-folder> [--title text] [--listed|--unlisted] [--local]\n--local imports and builds without committing or publishing. Updates replace the entire entry folder.');return;}
   const update=p[0]==='update';if(!['publish','update'].includes(p[0])||p.length!==(update?3:2))throw Error('Use scratch --help for usage.');
   if(o.listed&&o.unlisted)throw Error('Choose either --listed or --unlisted.');
   const source=path.resolve(p[update?2:1]);
