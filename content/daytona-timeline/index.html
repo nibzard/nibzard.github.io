@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>daytona.io publishing timeline</title>
 <style>
-  .viz-root {
-    color-scheme: light;
+  body {
     --surface-1: #fcfcfb;
     --page: #f9f9f7;
     --text-primary: #0b0b0b;
@@ -21,9 +20,9 @@
     --series-5: #e87ba4;
     --ring: rgba(11,11,11,0.10);
   }
+  .viz-root { color-scheme: light; }
   @media (prefers-color-scheme: dark) {
-    :root:where(:not([data-theme="light"])) .viz-root {
-      color-scheme: dark;
+    :root:where(:not([data-theme="light"])) body {
       --surface-1: #1a1a19;
       --page: #0d0d0d;
       --text-primary: #ffffff;
@@ -38,9 +37,9 @@
       --series-5: #d55181;
       --ring: rgba(255,255,255,0.10);
     }
+    :root:where(:not([data-theme="light"])) .viz-root { color-scheme: dark; }
   }
-  :root[data-theme="dark"] .viz-root {
-    color-scheme: dark;
+  :root[data-theme="dark"] body {
     --surface-1: #1a1a19;
     --page: #0d0d0d;
     --text-primary: #ffffff;
@@ -55,6 +54,7 @@
     --series-5: #d55181;
     --ring: rgba(255,255,255,0.10);
   }
+  :root[data-theme="dark"] .viz-root { color-scheme: dark; }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--page); }
   .viz-root {
@@ -441,6 +441,33 @@
     { key: 'changelog_old', label: 'Changelog (recovered — deleted from site)' }));
   chart.appendChild(panel('definitions', 'Definition pages first archived†', 89, 60, [0, 20, 40, 60], '--series-3'));
   chart.appendChild(lanePanel(DATA.launchweeks, 'Launch weeks (create.daytona.io)'));
+
+  var CROSS = [];
+  document.querySelectorAll('.panel svg').forEach(function (svg) {
+    var ph = svg.getAttribute('data-plot-h');
+    var line = el('line', {
+      y1: 6, y2: ph ? Number(ph) + 4 : 134,
+      stroke: 'var(--text-muted)', 'stroke-width': 1, opacity: 0.55,
+      visibility: 'hidden', 'pointer-events': 'none'
+    }, svg);
+    CROSS.push({ svg: svg, line: line });
+  });
+  CROSS.forEach(function (c) {
+    c.svg.addEventListener('pointermove', function (evt) {
+      var r = c.svg.getBoundingClientRect();
+      var px = (evt.clientX - r.left) * ((PADL + W + PADR) / r.width);
+      var i = Math.max(0, Math.min(DATA.months.length - 1, Math.floor((px - PADL) / SLOT)));
+      var xh = PADL + i * SLOT + SLOT / 2;
+      CROSS.forEach(function (o) {
+        o.line.setAttribute('x1', xh);
+        o.line.setAttribute('x2', xh);
+        o.line.setAttribute('visibility', 'visible');
+      });
+    });
+    c.svg.addEventListener('pointerleave', function () {
+      CROSS.forEach(function (o) { o.line.setAttribute('visibility', 'hidden'); });
+    });
+  });
 
   annotate('2025-05-10', '10 May 2025 · Niko leaves Daytona', [
     'rank 46 at departure',
