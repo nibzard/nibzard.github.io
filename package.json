@@ -1,0 +1,22 @@
+{
+  "name": "nibzard-scratch",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "scratch": "scripts/publish.mjs"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test",
+    "preview": "node scripts/serve.mjs",
+    "scratch": "node scripts/publish.mjs",
+    "check": "node scripts/check.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "marked": "18.1.2"
+  }
+}
