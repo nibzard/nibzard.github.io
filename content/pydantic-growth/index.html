@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pydantic.dev growth timeline</title>
+<style>
+  body {
+    --surface-1: #fcfcfb; --page: #f9f9f7; --text-primary: #0b0b0b; --text-secondary: #52514e;
+    --text-muted: #898781; --grid: #e1e0d9; --baseline: #c3c2b7;
+    --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100;
+    --series-5: #e87ba4; --series-6: #008300; --ring: rgba(11,11,11,0.10);
+  }
+  .viz-root { color-scheme: light; }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) body {
+      --surface-1: #1a1a19; --page: #0d0d0d; --text-primary: #ffffff; --text-secondary: #c3c2b7;
+      --text-muted: #898781; --grid: #2c2c2a; --baseline: #383835;
+      --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+      --series-5: #d55181; --series-6: #008300; --ring: rgba(255,255,255,0.10);
+    }
+    :root:where(:not([data-theme="light"])) .viz-root { color-scheme: dark; }
+  }
+  :root[data-theme="dark"] body {
+    --surface-1: #1a1a19; --page: #0d0d0d; --text-primary: #ffffff; --text-secondary: #c3c2b7;
+    --text-muted: #898781; --grid: #2c2c2a; --baseline: #383835;
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+    --series-5: #d55181; --series-6: #008300; --ring: rgba(255,255,255,0.10);
+  }
+  :root[data-theme="dark"] .viz-root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); }
+  .viz-root {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--text-primary);
+    max-width: 1040px; margin: 24px auto; padding: 28px 28px 20px;
+    background: var(--surface-1); border: 1px solid var(--ring); border-radius: 12px;
+  }
+  h1 { font-size: 19px; font-weight: 650; margin: 0 0 4px; display: inline; }
+  .theme-btn {
+    float: right; font: inherit; font-size: 12px; color: var(--text-secondary);
+    background: none; border: 1px solid var(--ring); border-radius: 7px;
+    padding: 3px 10px; cursor: pointer;
+  }
+  .theme-btn:hover { background: var(--grid); }
+  .sub { font-size: 13px; color: var(--text-secondary); margin: 0 0 8px; line-height: 1.5; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; margin: 0 0 14px; font-size: 12.5px; color: var(--text-secondary); }
+  .legend .key { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .panel { margin-bottom: 20px; }
+  .panel-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin: 0 2px 6px; }
+  .panel-title .n { color: var(--text-secondary); font-weight: 400; }
+  .panel svg { display: block; }
+  .axis { fill: var(--text-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .lbl { fill: var(--text-primary); font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .mlab { fill: var(--text-muted); font-size: 10px; }
+  .foot { font-size: 12px; color: var(--text-secondary); line-height: 1.55; margin-top: 14px; border-top: 1px solid var(--grid); padding-top: 10px; }
+  details { margin-top: 10px; font-size: 12.5px; }
+  summary { cursor: pointer; color: var(--text-secondary); }
+  table { border-collapse: collapse; margin-top: 8px; }
+  th, td { padding: 3px 12px 3px 0; text-align: right; font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 500; }
+  td { color: var(--text-secondary); }
+  td:first-child, th:first-child { text-align: left; }
+  td.mth { color: var(--text-primary); }
+  #tooltip {
+    position: fixed; pointer-events: none; z-index: 10; display: none;
+    background: var(--surface-1); border: 1px solid var(--ring); border-radius: 8px;
+    padding: 8px 10px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); max-width: 260px;
+  }
+  #tooltip .val { font-size: 15px; font-weight: 650; color: var(--text-primary); }
+  #tooltip .lab { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+  #tooltip .key { display: inline-block; width: 12px; height: 2px; border-radius: 1px; }
+  .hit { cursor: default; }
+  .hit:focus { outline: none; }
+</style>
+</head>
+<body>
+<div class="viz-root">
+  <button class="theme-btn" id="themeBtn" type="button">Light</button>
+  <h1>pydantic.dev growth timeline</h1>
+  <p class="sub">Monthly commits across six repositories, staff headcount, and domain rank · May 2017 - Oct 2026</p>
+  <div class="legend" id="legend"></div>
+  <div id="chart"></div>
+  <p class="foot">
+    <strong>Analysis.</strong> Three eras. Solo-maintainer pydantic (2017-2022) built the library that everything else rests on.
+    The company era starts Feb 2023 (Sequoia seed) and commits peak on pydantic core in 2023 toward the v2 rewrite.
+    Then the center of gravity moves: logfire from mid-2023, pydantic-ai from late 2024, monty in early 2026.
+    By Oct 2026 pydantic-ai runs 1,194 commits in a month, roughly 4x pydantic's all-time monthly peak, while core pydantic holds a steady 40-80.
+    Inferred staff (team identities committing in a month) rose from a pre-company 2 to 21 by Oct 2026, peaking at 25 in Q3 2026; domain rank peaked at 71 with the v2 launch (Jul 2023), then settled to a 64-65 plateau that has not moved through the Logfire and pydantic-ai era.
+    The Aug 2025 backlink purge (-28K links, rank unchanged) shows the plateau tracks link quality, not volume.
+    <br><strong>Rank vs DR:</strong> DataForSEO rank and Ahrefs Domain Rating measure the same idea (backlink-based strength, 0-100) on different indexes with different formulas, so the numbers are not comparable across tools. Same day this data was pulled, Ahrefs showed pydantic.dev at DR 83 with 9.9K linking websites while DataForSEO showed rank 64 with 7.6K referring domains; Ahrefs' 171K backlink count includes historical records, DataForSEO counts live links only. Use each scale only against itself.
+    <br><span style="color:var(--text-muted)">Sources: commits and staff from the GitHub API across six public repositories (May 2017 - Oct 2026); milestones from public announcements and release history; domain rank from DataForSEO backlinks/history, pulled 2026-10-30 (monthly snapshots end 2026-09).</span>
+  </p>
+  <details>
+    <summary>Table view</summary>
+    <div id="tablewrap"></div>
+  </details>
+</div>
+<div id="tooltip" role="status"></div>
+<script type="application/json" id="data">{"months":["2017-05","2017-06","2017-07","2017-08","2017-09","2017-10","2017-11","2017-12","2018-01","2018-02","2018-03","2018-04","2018-05","2018-06","2018-07","2018-08","2018-09","2018-10","2018-11","2018-12","2019-01","2019-02","2019-03","2019-04","2019-05","2019-06","2019-07","2019-08","2019-09","2019-10","2019-11","2019-12","2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08","2020-09","2020-10","2020-11","2020-12","2021-01","2021-02","2021-03","2021-04","2021-05","2021-06","2021-07","2021-08","2021-09","2021-10","2021-11","2021-12","2022-01","2022-02","2022-03","2022-04","2022-05","2022-06","2022-07","2022-08","2022-09","2022-10","2022-11","2022-12","2023-01","2023-02","2023-03","2023-04","2023-05","2023-06","2023-07","2023-08","2023-09","2023-10","2023-11","2023-12","2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08","2026-09","2026-10"],"repos":[{"name":"pydantic","color":"--series-1","values":[61,29,17,4,0,16,14,1,1,13,10,7,12,20,23,8,6,4,11,28,12,20,13,25,20,22,40,60,22,58,44,36,28,11,22,39,23,28,23,0,6,63,20,6,14,61,18,22,38,8,4,0,41,8,2,55,2,0,7,130,65,57,77,155,61,57,47,24,35,46,157,207,228,270,274,151,143,95,122,47,95,78,85,60,55,97,72,120,102,84,101,80,62,80,51,58,38,36,35,29,35,127,78,15,39,44,43,37,31,43,63,82,63,80]},{"name":"pydantic-ai","color":"--series-2","values":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,14,0,0,0,42,75,107,106,76,130,100,95,72,122,157,133,111,119,122,78,103,98,145,157,157,411,334,684,1194]},{"name":"logfire","color":"--series-3","values":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,34,27,87,75,38,51,101,100,95,84,41,36,40,37,63,54,92,39,46,48,29,32,83,46,43,51,33,19,24,50,31,58,47,46,39,82,113,98,119]},{"name":"monty","color":"--series-4","values":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,32,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,63,46,82,79,58,58,62,22,86,91,110,95]},{"name":"jiter","color":"--series-5","values":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,13,6,0,0,0,0,0,0,0,5,0,21,4,30,2,9,0,10,17,16,4,2,2,8,8,12,6,4,1,3,2,8,0,1,5,4,5,1,0,0,1,3,10,2,7,0,18,12,7]},{"name":"pydantic-settings","color":"--series-6","values":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,4,0,0,0,0,0,0,19,11,18,19,4,5,1,6,1,6,9,3,7,3,15,8,12,21,7,12,10,2,11,5,20,9,9,7,3,7,4,12,7,10,13,21,13,11,14,20,22,25,42]}],"staff":[2,2,2,null,null,2,2,null,null,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,4,3,2,2,2,2,2,1,1,1,2,1,1,null,1,1,1,null,1,1,1,1,1,1,1,1,3,2,null,2,2,null,1,1,3,1,3,4,4,2,3,3,2,4,4,5,8,9,8,8,11,9,12,9,9,9,10,10,8,9,7,9,10,11,10,9,10,11,13,14,12,17,17,14,14,15,15,16,18,20,21,20,17,17,19,25,20,21],"rank":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,17,22,55,55,59,59,59,60,71,70,70,70,67,67,64,64,65,62,62,62,62,62,63,63,63,64,64,64,64,64,64,64,64,64,65,64,64,64,64,65,65,65,65,65,65,65,64,null],"rankRd":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,22,56,118,208,304,379,411,512,628,713,919,1061,1183,2998,3059,3122,3171,3299,3473,3391,3414,3531,3619,3699,3726,3864,3991,4075,4132,4179,4299,4236,4464,4343,4756,4850,5032,5263,5332,5609,5729,6054,6412,6469,6774,7197,7586,null],"milestones":[{"m":"2017-05","label":"pydantic first PyPI release","short":""},{"m":"2022-08","label":"GitHub organization formalized","short":""},{"m":"2022-08","label":"10,674 stars (Wayback capture)","short":""},{"m":"2023-02","label":"Company incorporated; $4.7M seed led by Sequoia","short":"seed $4.7M"},{"m":"2023-06","label":"Pydantic v2 stable release","short":"v2 stable"},{"m":"2023-07","label":"Peak years: 1,775 pydantic commits; star velocity peak 438 per month","short":""},{"m":"2023-08","label":"Logfire development starts (420 days before launch)","short":""},{"m":"2024-01","label":"pydantic-ai development starts (first release 137 days later)","short":""},{"m":"2024-10","label":"Logfire general availability; $12.5M Series A","short":"Logfire GA + Series A"},{"m":"2025-01","label":"First pricing: usage-based, $2 per million","short":""},{"m":"2025-03","label":"YouTube channel created","short":""},{"m":"2025-09","label":"Enterprise SKUs at $1 per million","short":""},{"m":"2025-11","label":"Monty development restarts after a dormant 2024","short":""},{"m":"2026-01","label":"Seat pricing: Team $49, Growth $249 per month","short":""},{"m":"2026-02","label":"Monty launches 100 days after restart","short":"Monty launch"},{"m":"2026-05","label":"httpx2 development starts; still unannounced at 170 days","short":""},{"m":"2026-06","label":"Hiring burst: 11 open roles, first go-to-market hires","short":""},{"m":"2026-05","label":"Content peak: 48 articles; PyAI Conf videos (13)","short":""},{"m":"2026-07","label":"Archive wave: 8 repos archived, including FastUI and the pydantic-core repository","short":""}]}</script>
+<script>
+(function () {
+  var DATA = JSON.parse(document.getElementById('data').textContent);
+  var NS = 'http://www.w3.org/2000/svg';
+  var SLOT = 8;
+  var N = DATA.months.length;
+  var W = SLOT * N;
+  var PADL = 40, PADR = 8;
+  var tip = document.getElementById('tooltip');
+
+  function el(name, attrs, parent) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) {
+      var v = attrs[k];
+      if ((k === 'fill' || k === 'stroke') && v.indexOf('var(') === 0) e.style[k] = v;
+      else e.setAttribute(k, v);
+    }
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function monthLabel(ym) {
+    var p = ym.split('-');
+    var names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return names[+p[1] - 1] + ' ' + p[0];
+  }
+  function ticks(svg, y, H, vals) {
+    vals.forEach(function (t) {
+      el('line', { x1: PADL, x2: PADL + W, y1: y(t), y2: y(t), stroke: 'var(--grid)', 'stroke-width': 1 }, svg);
+      var txt = el('text', { x: PADL - 8, y: y(t) + 3.5, 'text-anchor': 'end', 'font-size': 11, fill: 'var(--text-muted)', class: 'axis' }, svg);
+      txt.textContent = t;
+    });
+  }
+  function monthTicks(svg, H) {
+    DATA.months.forEach(function (m, i) {
+      var mo = +m.split('-')[1];
+      if (mo === 1 || i === 0 || i === N - 1) {
+        var t = el('text', { x: PADL + i * SLOT + SLOT / 2, y: H + 20, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--text-muted)', class: 'axis' }, svg);
+        t.textContent = mo === 1 ? m.split('-')[0] : monthLabel(m).slice(0, 3) + " '" + m.split('-')[0].slice(2);
+      }
+    });
+  }
+  function showTip(rows, title, evt, hit) {
+    tip.style.display = 'block';
+    tip.textContent = '';
+    if (title != null) {
+      var val = document.createElement('div');
+      val.className = 'val';
+      val.textContent = title;
+      tip.appendChild(val);
+    }
+    rows.forEach(function (r) {
+      var lab = document.createElement('div');
+      lab.className = 'lab';
+      if (r.color) {
+        var key = document.createElement('span');
+        key.className = 'key';
+        key.style.background = r.color;
+        lab.appendChild(key);
+      }
+      lab.appendChild(document.createTextNode(r.text));
+      tip.appendChild(lab);
+    });
+    if (evt && evt.type === 'focus') {
+      var r0 = hit.getBoundingClientRect();
+      tip.style.left = (r0.left + r0.width / 2 - tip.offsetWidth / 2) + 'px';
+      tip.style.top = (r0.top - tip.offsetHeight - 8) + 'px';
+    } else if (evt) {
+      tip.style.left = Math.min(evt.clientX + 12, window.innerWidth - tip.offsetWidth - 8) + 'px';
+      tip.style.top = (evt.clientY - tip.offsetHeight - 10) + 'px';
+    }
+  }
+  function hideTip() { tip.style.display = 'none'; }
+  function hits(svg, H, rowsFor) {
+    DATA.months.forEach(function (m, i) {
+      var hit = el('rect', {
+        class: 'hit', x: PADL + i * SLOT, y: 6, width: SLOT, height: H,
+        fill: 'transparent', tabindex: 0, role: 'img', 'aria-label': monthLabel(m)
+      }, svg);
+      hit.addEventListener('pointermove', function (evt) { showTip(rowsFor(i), null, evt, hit); });
+      hit.addEventListener('pointerleave', hideTip);
+      hit.addEventListener('focus', function (evt) { showTip(rowsFor(i), null, evt, hit); });
+      hit.addEventListener('blur', hideTip);
+    });
+  }
+  function linePath(vals, y) {
+    var d = '', started = false;
+    vals.forEach(function (v, i) {
+      if (v == null) { started = false; return; }
+      d += (started ? ' L ' : ' M ') + (PADL + i * SLOT + SLOT / 2).toFixed(1) + ' ' + y(v).toFixed(1);
+      started = true;
+    });
+    return d;
+  }
+
+  var chart = document.getElementById('chart');
+  var CROSS = [];
+
+  function commitsPanel() {
+    var H = 150, TOPY = 6, YMAX = 1250;
+    var wrap = document.createElement('div');
+    wrap.className = 'panel';
+    var h = document.createElement('p');
+    h.className = 'panel-title';
+    h.innerHTML = 'Commits per month <span class="n">(six repositories; zero months within a repo lifespan are flat, months before it exists are absent)</span>';
+    wrap.appendChild(h);
+    var svg = el('svg', { width: PADL + W + PADR, height: H + 26, viewBox: '0 0 ' + (PADL + W + PADR) + ' ' + (H + 26), 'data-plot-h': H });
+    var y = function (v) { return TOPY + H - (v / YMAX) * H; };
+    ticks(svg, y, H, [0, 250, 500, 750, 1000, 1250]);
+    DATA.repos.forEach(function (r) {
+      el('path', { d: linePath(r.values, y), fill: 'none', stroke: 'var(' + r.color + ')', 'stroke-width': 1.75, 'stroke-linejoin': 'round' }, svg);
+      var last = -1;
+      r.values.forEach(function (v, i) { if (v != null) last = i; });
+      if (last >= 0) el('circle', { cx: PADL + last * SLOT + SLOT / 2, cy: y(r.values[last]), r: 3, fill: 'var(' + r.color + ')' }, svg);
+    });
+    var peakV = -1, peakI = -1;
+    DATA.repos.forEach(function (r) {
+      r.values.forEach(function (v, i) { if (v != null && v > peakV) { peakV = v; peakI = i; } });
+    });
+    if (peakI >= 0) {
+      var pl = el('text', { x: PADL + peakI * SLOT + SLOT / 2, y: y(peakV) - 6, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 600, fill: 'var(--text-primary)', 'pointer-events': 'none', class: 'lbl' }, svg);
+      pl.textContent = peakV.toLocaleString();
+    }
+    el('line', { x1: PADL, x2: PADL + W, y1: y(0), y2: y(0), stroke: 'var(--baseline)', 'stroke-width': 1 }, svg);
+    monthTicks(svg, H);
+    hits(svg, H, function (i) {
+      var rows = DATA.repos.filter(function (r) { return r.values[i] != null && r.values[i] > 0; }).map(function (r) {
+        return { color: 'var(' + r.color + ')', text: r.name + '  ' + r.values[i].toLocaleString() };
+      });
+      if (!rows.length) rows = [{ text: 'no commits' }];
+      rows.unshift({ text: monthLabel(DATA.months[i]), color: null });
+      return rows;
+    });
+    wrap.appendChild(svg);
+    return wrap;
+  }
+
+  function metricPanel(title, sub, vals, YMAX, tickVals, fmt, peakLabel, extraVals) {
+    var H = 110, TOPY = 6;
+    var wrap = document.createElement('div');
+    wrap.className = 'panel';
+    var h = document.createElement('p');
+    h.className = 'panel-title';
+    h.innerHTML = title + ' <span class="n">' + sub + '</span>';
+    wrap.appendChild(h);
+    var svg = el('svg', { width: PADL + W + PADR, height: H + 26, viewBox: '0 0 ' + (PADL + W + PADR) + ' ' + (H + 26), 'data-plot-h': H });
+    var y = function (v) { return TOPY + H - (v / YMAX) * H; };
+    ticks(svg, y, H, tickVals);
+    el('path', { d: linePath(vals, y), fill: 'none', stroke: 'var(--text-primary)', 'stroke-width': 2.25, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+    var fi = vals.findIndex(function (v) { return v != null; });
+    var li = vals.length - 1; while (li >= 0 && vals[li] == null) li--;
+    if (fi >= 0) {
+      el('circle', { cx: PADL + li * SLOT + SLOT / 2, cy: y(vals[li]), r: 3.5, fill: 'var(--text-primary)' }, svg);
+      var l0 = el('text', { x: PADL + fi * SLOT + SLOT / 2, y: y(vals[fi]) - 8, 'text-anchor': 'start', 'font-size': 11, 'font-weight': 600, fill: 'var(--text-primary)', class: 'lbl' }, svg);
+      l0.textContent = vals[fi];
+      var l1 = el('text', { x: PADL + li * SLOT + SLOT / 2 + 5, y: y(vals[li]) + 3.5, 'text-anchor': 'start', 'font-size': 11, 'font-weight': 600, fill: 'var(--text-primary)', class: 'lbl' }, svg);
+      l1.textContent = fmt(vals[li]);
+    }
+    if (peakLabel) {
+      var pi = vals.indexOf(Math.max.apply(null, vals.map(function (v) { return v == null ? -1 : v; })));
+      var pk = el('text', { x: PADL + pi * SLOT + SLOT / 2, y: y(vals[pi]) - 8, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 600, fill: 'var(--text-primary)', class: 'lbl' }, svg);
+      pk.textContent = peakLabel;
+    }
+    el('line', { x1: PADL, x2: PADL + W, y1: y(0), y2: y(0), stroke: 'var(--baseline)', 'stroke-width': 1 }, svg);
+    monthTicks(svg, H);
+    hits(svg, H, function (i) {
+      var v = vals[i];
+      var suffix = '';
+      if (extraVals && v != null && extraVals[i] != null) suffix = '  ·  ' + extraVals[i].toLocaleString() + ' referring domains';
+      return [{ text: monthLabel(DATA.months[i]) + '  ·  ' + (v == null ? 'no data' : fmt(v)) + suffix, color: null }];
+    });
+    wrap.appendChild(svg);
+    return wrap;
+  }
+
+  function milestonePanel() {
+    var H = 44;
+    var wrap = document.createElement('div');
+    wrap.className = 'panel';
+    var h = document.createElement('p');
+    h.className = 'panel-title';
+    h.innerHTML = 'Milestones <span class="n">(diamonds; hover for the event)</span>';
+    wrap.appendChild(h);
+    var svg = el('svg', { width: PADL + W + PADR, height: H + 26, viewBox: '0 0 ' + (PADL + W + PADR) + ' ' + (H + 26), 'data-plot-h': H });
+    var row = 0;
+    DATA.milestones.forEach(function (m, k) {
+      var i = DATA.months.indexOf(m.m);
+      if (i < 0) return;
+      var x = PADL + i * SLOT + SLOT / 2;
+      var g = el('g', {}, svg);
+      var yy = 10 + row * 14;
+      var d = 'M ' + x + ' ' + yy + ' l 4 4 l -4 4 l -4 -4 Z';
+      el('path', { d: d, fill: 'var(--text-secondary)' }, g);
+      if (m.short) {
+        var t = el('text', { x: x, y: yy + 16, 'text-anchor': 'middle', 'font-size': 10, fill: 'var(--text-muted)', class: 'mlab' }, svg);
+        t.textContent = m.short;
+      }
+      row = 1 - row;
+      var hit = el('rect', { class: 'hit', x: x - 6, y: 0, width: 12, height: H, fill: 'transparent', tabindex: 0, role: 'img', 'aria-label': m.label }, svg);
+      hit.addEventListener('pointermove', function (evt) { showTip([{ text: m.label }], m.m, evt, hit); });
+      hit.addEventListener('pointerleave', hideTip);
+      hit.addEventListener('focus', function (evt) { showTip([{ text: m.label }], m.m, evt, hit); });
+      hit.addEventListener('blur', hideTip);
+    });
+    el('line', { x1: PADL, x2: PADL + W, y1: H + 2, y2: H + 2, stroke: 'var(--baseline)', 'stroke-width': 1 }, svg);
+    monthTicks(svg, H);
+    wrap.appendChild(svg);
+    return wrap;
+  }
+
+  var legend = document.getElementById('legend');
+  legend.innerHTML = DATA.repos.map(function (r) {
+    return '<span class="key"><span class="swatch" style="background:var(' + r.color + ')"></span>' + r.name + '</span>';
+  }).join('');
+
+  chart.appendChild(commitsPanel());
+  chart.appendChild(metricPanel('Inferred staff', '(known team identities with a commit that month: @pydantic.dev emails plus 20 matched members)', DATA.staff, 25, [0, 5, 10, 15, 20, 25], function (v) { return String(v); }, null));
+  chart.appendChild(metricPanel('pydantic.dev domain rank', '(DataForSEO, 0-100, incl. subdomains; monthly snapshots from Nov 2022)', DATA.rank, 80, [0, 20, 40, 60, 80], function (v) { return String(v); }, '71', DATA.rankRd));
+  chart.appendChild(milestonePanel());
+
+  document.querySelectorAll('.panel svg').forEach(function (svg) {
+    var ph = svg.getAttribute('data-plot-h');
+    var line = el('line', {
+      y1: 6, y2: ph ? Number(ph) + 4 : 134,
+      stroke: 'var(--text-muted)', 'stroke-width': 1, opacity: 0.55,
+      visibility: 'hidden', 'pointer-events': 'none'
+    }, svg);
+    CROSS.push({ svg: svg, line: line });
+  });
+  CROSS.forEach(function (c) {
+    c.svg.addEventListener('pointermove', function (evt) {
+      var r = c.svg.getBoundingClientRect();
+      var px = (evt.clientX - r.left) * ((PADL + W + PADR) / r.width);
+      var i = Math.max(0, Math.min(N - 1, Math.floor((px - PADL) / SLOT)));
+      var xh = PADL + i * SLOT + SLOT / 2;
+      CROSS.forEach(function (o) {
+        o.line.setAttribute('x1', xh);
+        o.line.setAttribute('x2', xh);
+        o.line.setAttribute('visibility', 'visible');
+      });
+    });
+    c.svg.addEventListener('pointerleave', function () {
+      CROSS.forEach(function (o) { o.line.setAttribute('visibility', 'hidden'); });
+    });
+  });
+
+  var btn = document.getElementById('themeBtn');
+  btn.addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = getComputedStyle(document.querySelector('.viz-root')).colorScheme === 'dark';
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+    btn.textContent = dark ? 'Dark' : 'Light';
+  });
+
+  var tw = document.getElementById('tablewrap');
+  var tbl = document.createElement('table');
+  var thead = document.createElement('thead');
+  var hr = document.createElement('tr');
+  ['Month'].concat(DATA.repos.map(function (r) { return r.name; })).concat(['staff', 'rank']).forEach(function (t) {
+    var th = document.createElement('th'); th.textContent = t; hr.appendChild(th);
+  });
+  thead.appendChild(hr); tbl.appendChild(thead);
+  var tb = document.createElement('tbody');
+  DATA.months.forEach(function (m, i) {
+    var tr = document.createElement('tr');
+    var cells = [monthLabel(m)].concat(DATA.repos.map(function (r) { return r.values[i] == null ? '—' : r.values[i]; })).concat([DATA.staff[i] == null ? '—' : DATA.staff[i], DATA.rank[i] == null ? '—' : DATA.rank[i]]);
+    cells.forEach(function (v, j) {
+      var td = document.createElement('td');
+      if (j === 0) td.className = 'mth';
+      td.textContent = v; tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+  tbl.appendChild(tb); tw.appendChild(tbl);
+})();
+</script>
+</body>
+</html>
