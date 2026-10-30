@@ -3,3 +3,5 @@ This is a home for quick notes, research, experiments, and small interactive pag
 Each page has its own permanent address. Some are simple notes; others bring their own layout and tools. The homepage collects the listed entries, newest first.
 
 The site is built from Markdown and standalone HTML, with source history on [GitHub](https://github.com/nibzard/nibzard.github.io).
+
+Pages can evolve without changing their address. Dates on the homepage mark when an entry was first published.
