@@ -32,7 +32,7 @@ export async function build(repo=root, output=path.join(repo,'dist')) {
     entries.push({...meta,slug:d.name,dir,all,md});
   }
   await fs.rm(output,{recursive:true,force:true}); await fs.mkdir(output,{recursive:true});
-  const page=(title,description,body,home)=>template.replace(/\{\{(title|description|body|home|siteTitle)\}\}/g,(_,key)=>({title:escape(title),description:escape(description),body,home,siteTitle:escape(config.title)}[key]));
+  const page=(title,description,body,home)=>template.replace(/\{\{(title|description|body|home|siteTitle|github)\}\}/g,(_,key)=>({title:escape(title),description:escape(description),body,home,siteTitle:escape(config.title),github:`https://github.com/${config.repository}`}[key]));
   for(const e of entries) {
     const dest=path.join(output,e.slug); await fs.mkdir(dest,{recursive:true});
     for(const source of e.all) {
@@ -42,11 +42,14 @@ export async function build(repo=root, output=path.join(repo,'dist')) {
     }
     if(e.md) {
       const body=marked.parse(await fs.readFile(path.join(e.dir,'index.md'),'utf8'));
-      await fs.writeFile(path.join(dest,'index.html'),page(e.title,e.description,`<header><p class="meta">${escape(e.date)}${e.tags.length?' · '+e.tags.map(escape).join(' · '):''}</p><h1>${escape(e.title)}</h1></header><article>${body}</article>`,'../'));
+      const updated=e.updated&&e.updated.slice(0,10)!==e.date?`<span>Updated ${escape(e.updated.slice(0,10))}</span>`:'';
+      await fs.writeFile(path.join(dest,'index.html'),page(e.title,e.description,`<article class="note"><header class="note-head"><p class="eyebrow">${escape(e.date)}${e.tags.length?` <span aria-hidden="true">/</span> ${e.tags.map(escape).join(' · ')}`:''}</p><h1>${escape(e.title)}</h1>${e.description?`<p class="note-description">${escape(e.description)}</p>`:''}${updated}</header><div class="prose">${body}</div></article>`,'../'));
     }
   }
   const listed=entries.filter(e=>!e.unlisted).sort((a,b)=>b.date.localeCompare(a.date)||a.slug.localeCompare(b.slug));
-  const body=`<header><h1>${escape(config.title)}</h1><p class="lede">${escape(config.description)}</p></header><ul class="entries">${listed.map(e=>`<li><a href="./${e.slug}/"><span class="entry-title">${escape(e.title)}</span><time>${escape(e.date)}</time><p>${escape(e.description)}</p>${e.tags.length?`<span class="meta">${e.tags.map(escape).join(' · ')}</span>`:''}</a></li>`).join('')}</ul>${listed.length?'':'<p class="empty">A quiet place for the next idea.</p>'}`;
+  const byYear=Object.groupBy(listed,e=>e.date.slice(0,4));
+  const indexGroups=Object.entries(byYear).map(([year,items])=>`<section class="year-group" aria-labelledby="year-${year}"><h2 id="year-${year}">${year}</h2><ul class="entries">${items.map(e=>`<li><a href="./${e.slug}/"><time datetime="${escape(e.date)}">${escape(e.date.slice(5).replace('-', '.'))}</time><div class="entry-copy"><span class="entry-title">${escape(e.title)} <span class="arrow" aria-hidden="true">↗</span></span><p>${escape(e.description)}</p>${e.tags.length?`<span class="meta">${e.tags.map(escape).join(' · ')}</span>`:''}</div></a></li>`).join('')}</ul></section>`).join('');
+  const body=`<header class="index-head"><p class="kicker">A personal index</p><h1>Notes, experiments,<br>and things worth keeping.</h1><p class="lede">${escape(config.description)}</p></header>${indexGroups||'<p class="empty">A quiet place for the next idea.</p>'}`;
   await fs.writeFile(path.join(output,'index.html'),page(config.title,config.description,body,'./'));
   await fs.writeFile(path.join(output,'manifest.json'),JSON.stringify(listed.map(({slug,title,date,description,tags})=>({slug,title,date,description,tags})),null,2));
   await fs.writeFile(path.join(output,'.nojekyll'),'');
