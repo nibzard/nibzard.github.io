@@ -2,6 +2,8 @@
 
 A public home for quick notes and independent HTML pages at https://nibzard.github.io/.
 
+Inspired by [Matej Micek's scratch space](https://matejmicek.github.io/).
+
 ## Use
 
 Requires Node 22+, Git, and authenticated GitHub CLI (`gh`). Run `npm ci` once.
