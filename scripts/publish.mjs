@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs/promises';
+import {realpathSync} from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
@@ -112,4 +113,4 @@ async function main(){
     }else if(created)console.error(`Publish did not complete. Work preserved: ${work}`);
   }
 }
-if(process.argv[1]===fileURLToPath(import.meta.url))main().catch(e=>{console.error(e.message);process.exitCode=1});
+if(process.argv[1]&&realpathSync(process.argv[1])===fileURLToPath(import.meta.url))main().catch(e=>{console.error(e.message);process.exitCode=1});
