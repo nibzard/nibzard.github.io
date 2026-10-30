@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>daytona.io publishing timeline</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --series-1: #2a78d6;
+    --series-2: #eb6834;
+    --series-3: #1baf7a;
+    --series-4: #eda100;
+    --series-5: #e87ba4;
+    --ring: rgba(11,11,11,0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --series-3: #199e70;
+      --series-4: #c98500;
+      --series-5: #d55181;
+      --ring: rgba(255,255,255,0.10);
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --surface-1: #1a1a19;
+    --page: #0d0d0d;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --grid: #2c2c2a;
+    --baseline: #383835;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #c98500;
+    --series-5: #d55181;
+    --ring: rgba(255,255,255,0.10);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); }
+  .viz-root {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--text-primary);
+    max-width: 1040px; margin: 24px auto; padding: 28px 28px 20px;
+    background: var(--surface-1); border: 1px solid var(--ring); border-radius: 12px;
+  }
+  h1 { font-size: 19px; font-weight: 650; margin: 0 0 4px; display: inline; }
+  .theme-btn {
+    float: right; font: inherit; font-size: 12px; color: var(--text-secondary);
+    background: none; border: 1px solid var(--ring); border-radius: 7px;
+    padding: 3px 10px; cursor: pointer;
+  }
+  .theme-btn:hover { background: var(--grid); }
+  .sub { font-size: 13px; color: var(--text-secondary); margin: 0 0 20px; line-height: 1.5; }
+  .panel { margin-bottom: 22px; }
+  .panel-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin: 0 2px 6px; }
+  .panel-title .n { color: var(--text-secondary); font-weight: 400; }
+  .panel svg { display: block; }
+  .foot { font-size: 12px; color: var(--text-secondary); line-height: 1.55; margin-top: 14px; border-top: 1px solid var(--grid); padding-top: 10px; }
+  .foot .dag { color: var(--text-muted); }
+  details { margin-top: 10px; font-size: 12.5px; }
+  summary { cursor: pointer; color: var(--text-secondary); }
+  table { border-collapse: collapse; margin-top: 8px; }
+  th, td { padding: 3px 14px 3px 0; text-align: right; font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 500; text-align: right; }
+  td:first-child, th:first-child { text-align: left; }
+  td { color: var(--text-secondary); }
+  td.mth { color: var(--text-primary); }
+  #tooltip {
+    position: fixed; pointer-events: none; z-index: 10; display: none;
+    background: var(--surface-1); border: 1px solid var(--ring); border-radius: 8px;
+    padding: 8px 10px; box-shadow: 0 4px 14px rgba(0,0,0,0.14); max-width: 240px;
+  }
+  #tooltip .val { font-size: 15px; font-weight: 650; color: var(--text-primary); }
+  #tooltip .lab { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+  #tooltip .key { display: inline-block; width: 12px; height: 2px; border-radius: 1px; }
+  .hit { cursor: default; }
+  .hit:focus { outline: none; }
+  .bar.lit { opacity: 0.82; }
+  .bar.old { opacity: 0.45; }
+  .bar.old.lit { opacity: 0.62; }
+</style>
+</head>
+<body>
+<div class="viz-root">
+  <button class="theme-btn" id="themeBtn" type="button">Light</button>
+  <h1>daytona.io publishing timeline</h1>
+  <p class="sub">Items per month across four content types, Jun 2023 – Oct 2026 · 202 blog posts (articles + guides) · 34 product-update posts · 164 changelog entries (44 recovered from Wayback) · 89 glossary definition pages · 8 launch weeks</p>
+  <div id="chart"></div>
+  <p class="foot">
+    <strong>Analysis.</strong>
+    The blog is the through-line: 2–15 posts every month since Jun 2023, with July spikes (15 in 2023, 13 in 2024, 12 in 2026) and two zero-months around the 2025–26 new year.
+    Everything else is an era. The glossary was a one-time push — all 89 pages went up between Feb 2024 and Feb 2025<span class="dag">†</span>, and not one was added after.
+    Update posts peaked in Oct 2024 (9), then slowed to a trickle: 7 posts in the 17 months after Dec 2024.
+    The changelog has two lives: a 2024 open-source run of 44 releases in 9 months (v0.1.0–v0.44.0, lighter shade — later deleted from the site and recovered from the Wayback Machine), then silence, then a restart at v0.101.0 (Sep 10 2025) that has run at ~9 entries per month since.
+    The vertical line (10 May 2025) splits it cleanly: before it, 71 blog posts and 46 glossary pages per year; after it, blog output fell ~38% to 44 per year while the changelog became the publishing engine at 81 entries per year — release notes replaced editorial content.
+    Launch weeks tell the same story in events: five ran before the line (monthly through fall 2024, then LW5 ending eight days before Niko left), three after (Jun, Aug, Oct 2025) — and none in 2026.
+    <br><span style="color:var(--text-muted)">Dates: RSS feed, page heroes, and entry pages (exact); definitions are Wayback first-capture approximations. Full per-item list: <code>daytona_dates.md</code>.</span>
+  </p>
+  <details>
+    <summary>Table view — items per month</summary>
+    <div id="tablewrap"></div>
+  </details>
+</div>
+<div id="tooltip" role="status"></div>
+<script type="application/json" id="data">{"months": ["2023-06", "2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09", "2026-10"], "articles": [2, 15, 7, 13, 3, 2, 5, 6, 2, 4, 2, 3, 4, 13, 7, 8, 10, 3, 7, 2, 5, 5, 6, 4, 5, 4, 9, 2, 7, 0, 2, 0, 1, 2, 2, 6, 3, 12, 1, 4, 4], "changelog": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 7, 9, 10, 10, 11, 12, 12, 9, 11, 3, 10, 4], "definitions": [0, 0, 0, 0, 0, 0, 0, 0, 60, 1, 1, 6, 5, 1, 3, 3, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "updates": [0, 0, 0, 0, 0, 2, 1, 1, 0, 0, 0, 0, 0, 0, 3, 6, 9, 0, 5, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 2, 1, 1, 0, 0, 0, 0], "changelog_old": [0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 3, 4, 4, 3, 4, 8, 7, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "launchweeks": [{"l": "LW1", "s": "2024-09-09", "e": "2024-09-13", "range": "Sep 9 - 13, 2024"}, {"l": "LW2", "s": "2024-10-21", "e": "2024-10-25", "range": "Oct 21 - 25, 2024 (approx)"}, {"l": "LW3", "s": "2024-11-25", "e": "2024-11-29", "range": "Nov 25 - 29, 2024"}, {"l": "LW4", "s": "2024-12-09", "e": "2024-12-13", "range": "Dec 2024 (week approx)"}, {"l": "LW5", "s": "2025-04-28", "e": "2025-05-02", "range": "Apr 28 - May 2, 2025"}, {"l": "LW6", "s": "2025-06-02", "e": "2025-06-06", "range": "Jun 2 - 6, 2025"}, {"l": "LW7", "s": "2025-08-25", "e": "2025-08-29", "range": "Aug 25 - 29, 2025"}, {"l": "LW8", "s": "2025-10-13", "e": "2025-10-17", "range": "Oct 13 - 17, 2025"}]}</script>
+<script>
+(function () {
+  var DATA = JSON.parse(document.getElementById('data').textContent);
+  var NS = 'http://www.w3.org/2000/svg';
+  var SLOT = 23.4;            // px per month slot
+  var BARW = 12;              // bar thickness, <= 24 spec cap
+  var R = 4;                  // rounded data-end
+  var W = Math.round(SLOT * DATA.months.length);
+  var PADL = 40, PADR = 8;
+  var tip = document.getElementById('tooltip');
+
+  function el(name, attrs, parent) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) {
+      var v = attrs[k];
+      if ((k === 'fill' || k === 'stroke') && v.indexOf('var(') === 0) e.style[k] = v;
+      else e.setAttribute(k, v);
+    }
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function monthLabel(ym) {
+    var p = ym.split('-');
+    var names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return names[+p[1] - 1] + ' ' + p[0];
+  }
+
+  function panel(seriesKey, title, count, ymax, ticks, colorVar, old) {
+    var H = 128, TOPY = 6;
+    var wrap = document.createElement('div');
+    wrap.className = 'panel';
+    var h = document.createElement('p');
+    h.className = 'panel-title';
+    h.textContent = title + ' ';
+    var n = document.createElement('span');
+    n.className = 'n';
+    n.textContent = '(' + count + ')';
+    h.appendChild(n);
+    wrap.appendChild(h);
+
+    var svg = el('svg', { width: PADL + W + PADR, height: H + 26, viewBox: '0 0 ' + (PADL + W + PADR) + ' ' + (H + 26) });
+    var vals = DATA[seriesKey];
+    var y = function (v) { return TOPY + H - (v / ymax) * H; };
+
+    ticks.forEach(function (t) {
+      el('line', { x1: PADL, x2: PADL + W, y1: y(t), y2: y(t), stroke: 'var(--grid)', 'stroke-width': 1 }, svg);
+      var txt = el('text', { x: PADL - 8, y: y(t) + 3.5, 'text-anchor': 'end', 'font-size': 11, fill: 'var(--text-muted)' }, svg);
+      txt.textContent = t;
+    });
+
+    var maxIdx = vals.indexOf(Math.max.apply(null, vals));
+    vals.forEach(function (v, i) {
+      var ov = old && DATA[old.key] ? DATA[old.key][i] : 0;
+      var drawV = v > 0 ? v : ov;
+      var isOld = v === 0 && ov > 0;
+      var x = PADL + i * SLOT + (SLOT - BARW) / 2;
+      if (drawV > 0) {
+        var top = y(drawV), base = y(0);
+        var d = 'M ' + x + ' ' + base +
+                ' L ' + x + ' ' + (top + R) +
+                ' Q ' + x + ' ' + top + ' ' + (x + R) + ' ' + top +
+                ' L ' + (x + BARW - R) + ' ' + top +
+                ' Q ' + (x + BARW) + ' ' + top + ' ' + (x + BARW) + ' ' + (top + R) +
+                ' L ' + (x + BARW) + ' ' + base + ' Z';
+        var g = el('g', { class: 'barwrap', 'data-i': i }, svg);
+        el('path', { class: isOld ? 'bar old' : 'bar', d: d, fill: 'var(' + colorVar + ')' }, g);
+        if (i === maxIdx && !isOld) {
+          var lab = el('text', { x: x + BARW / 2, y: top - 5, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 600, fill: 'var(--text-primary)' }, svg);
+          lab.textContent = drawV;
+        }
+      }
+      var hit = el('rect', {
+        class: 'hit', x: PADL + i * SLOT, y: TOPY, width: SLOT, height: H,
+        fill: 'transparent', tabindex: 0, role: 'img',
+        'aria-label': monthLabel(DATA.months[i]) + ': ' + drawV + ' ' + (isOld ? old.label : title).toLowerCase()
+      }, svg);
+      var barPath = svg.querySelector('.barwrap[data-i="' + i + '"] path.bar');
+      function show(evt) {
+        if (barPath) barPath.classList.add('lit');
+        tip.style.display = 'block';
+        tip.textContent = '';
+        var val = document.createElement('div');
+        val.className = 'val';
+        val.textContent = drawV;
+        tip.appendChild(val);
+        var labr = document.createElement('div');
+        labr.className = 'lab';
+        var key = document.createElement('span');
+        key.className = 'key';
+        key.style.background = 'var(' + colorVar + ')';
+        if (isOld) key.style.opacity = '0.45';
+        labr.appendChild(key);
+        labr.appendChild(document.createTextNode((isOld ? old.label : title) + ' — ' + monthLabel(DATA.months[i])));
+        tip.appendChild(labr);
+        if (evt && evt.type === 'focus') {
+          var r0 = hit.getBoundingClientRect();
+          tip.style.left = (r0.left + r0.width / 2 - tip.offsetWidth / 2) + 'px';
+          tip.style.top = (r0.top - tip.offsetHeight - 8) + 'px';
+        } else {
+          tip.style.left = Math.min(evt.clientX + 12, window.innerWidth - tip.offsetWidth - 8) + 'px';
+          tip.style.top = (evt.clientY - tip.offsetHeight - 10) + 'px';
+        }
+      }
+      function hide() {
+        if (barPath) barPath.classList.remove('lit');
+        tip.style.display = 'none';
+      }
+      hit.addEventListener('pointermove', show);
+      hit.addEventListener('pointerleave', hide);
+      hit.addEventListener('focus', show);
+      hit.addEventListener('blur', hide);
+    });
+
+    el('line', { x1: PADL, x2: PADL + W, y1: y(0), y2: y(0), stroke: 'var(--baseline)', 'stroke-width': 1 }, svg);
+
+    DATA.months.forEach(function (m, i) {
+      var mo = +m.split('-')[1];
+      if (mo === 1 || i === 0 || i === DATA.months.length - 1) {
+        var t = el('text', { x: PADL + i * SLOT + SLOT / 2, y: H + 20, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--text-muted)' }, svg);
+        t.textContent = mo === 1 ? m.split('-')[0] : monthLabel(m).slice(0, 3) + " '" + m.split('-')[0].slice(2);
+      }
+    });
+
+    wrap.appendChild(svg);
+    return wrap;
+  }
+
+  function dateX(dateStr) {
+    var p = dateStr.split('-');
+    var idx = DATA.months.indexOf(p[0] + '-' + p[1]);
+    if (idx < 0) return null;
+    var dim = new Date(+p[0], +p[1], 0).getDate();
+    return PADL + (idx + (+p[2] - 0.5) / dim) * SLOT;
+  }
+
+  function lanePanel(items, title) {
+    var H = 30, LBL = 16;
+    var wrap = document.createElement('div');
+    wrap.className = 'panel';
+    var h = document.createElement('p');
+    h.className = 'panel-title';
+    h.textContent = title + ' ';
+    var n = document.createElement('span');
+    n.className = 'n';
+    n.textContent = '(' + items.length + ')';
+    h.appendChild(n);
+    wrap.appendChild(h);
+    var svg = el('svg', { width: PADL + W + PADR, height: H + LBL + 4, 'data-plot-h': H, viewBox: '0 0 ' + (PADL + W + PADR) + ' ' + (H + LBL + 4) });
+    items.forEach(function (it) {
+      var x1 = dateX(it.s), x2 = dateX(it.e);
+      if (x1 === null || x2 === null) return;
+      var bx = Math.min(x1, x2), bw = Math.max(6, Math.abs(x2 - x1));
+      var g = el('g', { class: 'barwrap' }, svg);
+      var r = el('rect', { class: 'bar', x: bx, y: 8, width: bw, height: 12, rx: 3, fill: 'var(--series-5)' }, g);
+      var t = el('text', { x: bx + bw / 2, y: 36, 'text-anchor': 'middle', 'font-size': 10.5, fill: 'var(--text-muted)', 'pointer-events': 'none' }, svg);
+      t.textContent = it.l;
+      var hit = el('rect', {
+        class: 'hit', x: bx - 6, y: 0, width: bw + 12, height: H + LBL,
+        fill: 'transparent', tabindex: 0, role: 'img', 'aria-label': it.l + ' ' + it.range
+      }, svg);
+      function show(evt) {
+        r.classList.add('lit');
+        tip.style.display = 'block';
+        tip.textContent = '';
+        var val = document.createElement('div');
+        val.className = 'val';
+        val.textContent = it.l;
+        tip.appendChild(val);
+        var labr = document.createElement('div');
+        labr.className = 'lab';
+        var key = document.createElement('span');
+        key.className = 'key';
+        key.style.background = 'var(--series-5)';
+        labr.appendChild(key);
+        labr.appendChild(document.createTextNode(it.range));
+        tip.appendChild(labr);
+        if (evt && evt.type === 'focus') {
+          var r0 = hit.getBoundingClientRect();
+          tip.style.left = (r0.left + r0.width / 2 - tip.offsetWidth / 2) + 'px';
+          tip.style.top = (r0.top - tip.offsetHeight - 8) + 'px';
+        } else {
+          tip.style.left = Math.min(evt.clientX + 12, window.innerWidth - tip.offsetWidth - 8) + 'px';
+          tip.style.top = (evt.clientY - tip.offsetHeight - 10) + 'px';
+        }
+      }
+      function hide() { r.classList.remove('lit'); tip.style.display = 'none'; }
+      hit.addEventListener('pointermove', show);
+      hit.addEventListener('pointerleave', hide);
+      hit.addEventListener('focus', show);
+      hit.addEventListener('blur', hide);
+    });
+    el('line', { x1: PADL, x2: PADL + W, y1: H + 4, y2: H + 4, stroke: 'var(--baseline)', 'stroke-width': 1 }, svg);
+    wrap.appendChild(svg);
+    return wrap;
+  }
+
+  function annotate(dateStr, labelText, sums) {
+    var lx = dateX(dateStr);
+    if (lx === null) return;
+    var svgs = document.querySelectorAll('.panel svg');
+    svgs.forEach(function (svg, si) {
+      var ph = svg.getAttribute('data-plot-h');
+      el('line', {
+        x1: lx, x2: lx, y1: 6, y2: ph ? Number(ph) + 4 : 134,
+        stroke: 'var(--text-muted)', 'stroke-width': 1, 'pointer-events': 'none'
+      }, svg);
+      if (si === 0) {
+        var t = el('text', {
+          x: lx + 6, y: 16, 'font-size': 11, 'font-weight': 600,
+          fill: 'var(--text-secondary)', 'pointer-events': 'none'
+        }, svg);
+        t.textContent = labelText;
+      }
+      var s = el('text', {
+        x: lx + 6, y: si === 0 ? 30 : 16, 'font-size': 11,
+        fill: 'var(--text-muted)', 'pointer-events': 'none'
+      }, svg);
+      s.textContent = sums[si];
+    });
+  }
+
+  var chart = document.getElementById('chart');
+  chart.appendChild(panel('articles', 'Blog posts: articles + guides (Dotfiles)', 202, 15, [0, 5, 10, 15], '--series-1'));
+  chart.appendChild(panel('updates', 'Product-update posts', 34, 15, [0, 5, 10, 15], '--series-4'));
+  chart.appendChild(panel('changelog', 'Changelog entries (120 live + 44 recovered)', 164, 15, [0, 5, 10, 15], '--series-2',
+    { key: 'changelog_old', label: 'Changelog (recovered — deleted from site)' }));
+  chart.appendChild(panel('definitions', 'Definition pages first archived†', 89, 60, [0, 20, 40, 60], '--series-3'));
+  chart.appendChild(lanePanel(DATA.launchweeks, 'Launch weeks (create.daytona.io)'));
+
+  annotate('2025-05-10', '10 May 2025 · Niko leaves Daytona', [
+    '137 of 202 posts to date',
+    '27 of 34 to date',
+    '44 of 164 to date — all pre-restart entries',
+    '89 of 89 archived to date',
+    '5 of 8 ran to date'
+  ]);
+
+  var btn = document.getElementById('themeBtn');
+  btn.addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = getComputedStyle(document.querySelector('.viz-root')).colorScheme === 'dark';
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+    btn.textContent = dark ? 'Dark' : 'Light';
+  });
+
+  var tw = document.getElementById('tablewrap');
+  var tbl = document.createElement('table');
+  var thead = document.createElement('thead');
+  var hr = document.createElement('tr');
+  ['Month', 'Blog posts', 'Updates', 'Changelog', 'Changelog (recovered)', 'Definitions†'].forEach(function (t) {
+    var th = document.createElement('th'); th.textContent = t; hr.appendChild(th);
+  });
+  thead.appendChild(hr); tbl.appendChild(thead);
+  var tb = document.createElement('tbody');
+  DATA.months.forEach(function (m, i) {
+    var tr = document.createElement('tr');
+    [monthLabel(m), DATA.articles[i], DATA.updates[i], DATA.changelog[i], DATA.changelog_old[i], DATA.definitions[i]].forEach(function (v, j) {
+      var td = document.createElement('td');
+      if (j === 0) td.className = 'mth';
+      td.textContent = v; tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+  tbl.appendChild(tb); tw.appendChild(tbl);
+})();
+</script>
+</body>
+</html>
