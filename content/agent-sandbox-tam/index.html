@@ -469,6 +469,13 @@ winnable SOM   = SAM × reachable share × win rate</div>
     <div id="recon"></div>
   </div>
 
+  <div class="card" id="hw-card">
+    <h2 style="margin-top:0">Against hardware spend</h2>
+    <p class="small muted">Nobody publishes a forecast for agent sandboxes alone. The nearest figure is what buyers spend on server CPUs that run sandboxes, orchestration, and agent tools<sup>[14]</sup>. Sandbox demand should be a part of it. Grey band: that CPU spend. Black tick: the whole server CPU market (2030). Dots: this model's total demand, low, mid, and high. Log scale.</p>
+    <div id="hw"></div>
+    <p class="small" id="hw-text"></p>
+  </div>
+
   <div class="card" id="rr-card">
     <h2 style="margin-top:0">Estimate from reported run rates</h2>
     <p class="small muted">Three vendors publish a sandbox run rate: annual revenue at the current monthly pace. Sources are numbered at the bottom of this tab.</p>
@@ -1159,7 +1166,10 @@ winnable SOM   = SAM × reachable share × win rate</div>
     ['Anthropic: Claude pricing, Managed Agents section', 'https://platform.claude.com/docs/en/about-claude/pricing'],
     ['Anthropic: Managed Agents self-hosted sandboxes', 'https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes'],
     ['OpenAI Developer Community: Agents API and hosted sandboxes (10 Sep 2026)', 'https://community.openai.com/t/introducing-the-agents-api-and-hosted-sandboxes/1396481'],
+    ['Futurum: The $246 billion CPU opportunity (1 Oct 2026)', 'https://futurumgroup.com/insights/the-246-billion-cpu-opportunitys-winning-chip-has-not-been-designed-yet/'],
   ];
+  // Futurum: standalone AI CPUs (sandboxes, orchestration, tools) and the whole server CPU market.
+  const HW = { 2026: { cpu: 23.7e9 }, 2030: { cpu: 164.7e9, all: 245.9e9 } };
   const state = { tab: 'answer', s: 'mid', y: 2030, lev: DEFAULT_LEV(), ov: {}, we: 'coding', rr: 0.45 };
 
   const isModified = () => LEVERS.some((L) => L.kind === 'mult' ? state.lev[L.k] !== 1 : state.lev[L.k] !== null) || Object.keys(state.ov).length > 0;
@@ -1695,6 +1705,34 @@ winnable SOM   = SAM × reachable share × win rate</div>
       s += '<circle cx="' + x(+d.m) + '" cy="16" r="6" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/>';
       el.innerHTML = svgOpen(W, H, 'Earlier range against model low, mid, and high') + s + '</svg>';
     });
+
+    const hlo = 1e9, hhi = 1e13;
+    $('hw').innerHTML = [2026, 2030].map((y) => {
+      const v = { low: sc.low[y].economic_tam, mid: sc.mid[y].economic_tam, high: sc.high[y].economic_tam };
+      return '<div style="margin:14px 0 4px"><div class="lab"><b>' + y + '</b></div>' +
+        '<div class="small muted">CPU spend ' + usd(HW[y].cpu) + (HW[y].all ? ' · all server CPUs ' + usd(HW[y].all) : '') + ' · Model total demand: low ' + usd(v.low) + ' · <b style="color:var(--ink)">mid ' + usd(v.mid) + '</b> · high ' + usd(v.high) + '</div>' +
+        '<div class="chart hw-row" data-c="' + HW[y].cpu + '" data-t="' + (HW[y].all || 0) + '" data-l="' + v.low + '" data-m="' + v.mid + '" data-h="' + v.high + '"></div></div>';
+    }).join('');
+    document.querySelectorAll('.hw-row').forEach((el) => {
+      const W = widthOf(el), H = 46, pl = 6, pr = 14;
+      const x = (v) => pl + (Math.log10(Math.min(hhi, Math.max(hlo, v))) - 9) / 4 * (W - pl - pr);
+      const d = el.dataset;
+      let g = '';
+      for (let e = 9; e <= 13; e++) {
+        const xv = x(Math.pow(10, e));
+        g += '<line class="gridline" x1="' + xv + '" x2="' + xv + '" y1="4" y2="28"/><text class="tick" x="' + xv + '" y="42" text-anchor="middle">' + usd(Math.pow(10, e)) + '</text>';
+      }
+      g += '<rect x="' + x(1e9) + '" y="8" width="' + (x(+d.c) - x(1e9)) + '" height="16" rx="4" fill="var(--muted)" opacity="0.45"/>';
+      if (+d.t) g += '<line x1="' + x(+d.t) + '" x2="' + x(+d.t) + '" y1="4" y2="28" stroke="var(--ink)" stroke-width="2"/>';
+      g += '<line x1="' + x(+d.l) + '" x2="' + x(+d.h) + '" y1="16" y2="16" stroke="var(--ink)" stroke-width="2"/>';
+      g += '<circle cx="' + x(+d.l) + '" cy="16" r="4" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>';
+      g += '<circle cx="' + x(+d.h) + '" cy="16" r="4" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>';
+      g += '<circle cx="' + x(+d.m) + '" cy="16" r="6" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/>';
+      el.innerHTML = svgOpen(W, H, 'Server CPU spend against model total demand') + g + '</svg>';
+    });
+    const sh = (y, k) => sc[k][y].economic_tam / HW[y].cpu;
+    $('hw-text').innerHTML = 'Mid total demand is <b>' + pct(sh(2026, 'mid')) + '</b> of that CPU spend in 2026 and <b>' + pct(sh(2030, 'mid')) + '</b> in 2030. That is a plausible share. ' +
+      'The high case for 2030 is <b>' + Number((sc.high[2030].economic_tam / HW[2030].all).toPrecision(2)) + ' times</b> the whole server CPU market. It cannot happen at today’s prices; read it as an outer bound only.';
 
     const m26 = sc[state.s][2026].merchant;
     const vmx = RR_TOTAL;
