@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The bull case for agent sandboxes: $26.1B by 2030</title>
-<meta name="description" content="The bull case for the market for isolated computers (sandboxes) that AI agents use, 2026 to 2030.">
+<meta name="description" content="A report on the market for isolated computers (sandboxes) that AI agents use, 2026 to 2030: the bull case, the mid case, and a joint downside.">
 <style>
 :root {
   color-scheme: light;
@@ -102,6 +102,7 @@ figcaption span { display: block; font-family: var(--sans); font-weight: 400; co
 .col .stack { width: 100%; max-width: 54px; display: flex; flex-direction: column-reverse; gap: 1px; min-height: 2px; }
 .col .stack i { display: block; min-height: 1px; }
 .col span { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+.col em { font-style: normal; font-family: var(--mono); font-size: 0.6875rem; color: var(--ink-2); margin-top: -4px; }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.8125rem; color: var(--ink-2); margin-top: 10px; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .sw { width: 10px; height: 10px; display: inline-block; flex: none; }
@@ -137,8 +138,14 @@ footer { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); bord
   .wrap { max-width: none; padding: 0; }
   .top a { display: none; }
   h1 { font-size: 17pt; margin: 4px 0 6px; }
-  h2 { margin: 14px 0 4px; font-size: 10.5pt; }
+  h2 { margin: 10px 0 3px; font-size: 10.5pt; }
   p, li { margin: 3px 0; }
+  .wf .row, .hbars .hbar { display: grid; grid-template-columns: 48% 1fr; align-items: center; column-gap: 10px; }
+  .wf .track, .hbar .track { margin-top: 0; }
+  .hbar .sub { grid-column: 2; margin-top: 0; }
+  .wf, .hbars { gap: 2px; }
+  footer { margin-top: 8px; padding-top: 6px; }
+  ol.sources li { margin: 1px 0; font-size: 0.8rem; line-height: 1.3; }
   .points > li { margin: 6px 0; }
   .bento, figure { margin: 8px 0; }
   .bento > *, figure { padding: 10px 12px; }
@@ -177,34 +184,34 @@ footer { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); bord
 
 <div class="bento">
   <div class="hero">
-    <div class="eyebrow">Bull case · 16 November 2026 · about 6 minutes</div>
+    <div class="eyebrow">Bull case · 16 November 2026 · about 7 minutes</div>
     <h1>The bull case for agent sandboxes: $26.1B by 2030</h1>
-    <p class="lead">Every AI agent needs a private computer to run code, use a browser, and learn. Vendors that rent these computers bill about <b>$1.54B</b> a year today. In the bull case, that grows to <b>$26.1B</b> in 2030. For this, growth must slow only from 12–37× this year to about 2× a year.</p>
+    <p class="lead">Every AI agent needs a private computer to run code, use a browser, and learn. We estimate that vendors who rent these computers bill about <b>$1.54B</b> a year at the end of 2026. In the bull case, that grows to <b>$26.1B</b> in 2030. The mid case gives <b>$13.3B</b>. If prices fall 20% a year and big buyers move 30% of the work in-house, bull volumes give only <b>$10.3B</b>. The bull case is a bet on volume <i>and</i> on vendors keeping their price.</p>
   </div>
-  <div class="kpi m1"><div class="k">Vendor revenue, 2026</div><div class="v">$1.54B</div><div class="r">matches reported revenue</div></div>
-  <div class="kpi m1"><div class="k">Vendor revenue, 2030</div><div class="v">$26.1B</div><div class="r">mid case $13.3B</div></div>
-  <div class="kpi m1"><div class="k">Growth a year</div><div class="v">103%</div><div class="r">mid case 71%</div></div>
-  <div class="kpi m1"><div class="k">Total demand, 2030</div><div class="v">$75.7B</div><div class="r">including in-house work</div></div>
+  <div class="kpi m1"><div class="k">Vendor revenue, 2026</div><div class="v">$1.54B</div><div class="r">model estimate, year-end run rate</div></div>
+  <div class="kpi m1"><div class="k">Bull case, 2030</div><div class="v">$26.1B</div><div class="r">2027 growth +191%, then slower</div></div>
+  <div class="kpi m1"><div class="k">Mid case, 2030</div><div class="v">$13.3B</div><div class="r">central estimate</div></div>
+  <div class="kpi m1"><div class="k">Joint downside, 2030</div><div class="v">$10.3B</div><div class="r">bull volumes, price war, in-house</div></div>
 </div>
 
 <section>
 <h2>The thesis</h2>
 <p>A <b>sandbox</b> is an isolated computer where an agent works. Agents are moving from chat to tasks, and every task needs a safe place to run. So sandbox time is a usage meter for the agent economy. It grows with the number of agents, the work that each agent does, and the time that each task runs.</p>
-<p><b>Vendor revenue</b> is what outside vendors bill for this time, including model labs that resell it. <b>Total demand</b> also counts work that buyers run on their own servers. Model tokens and ordinary hosting are out of scope.</p>
+<p><b>Vendor revenue</b> is what outside vendors, clouds, and labs bill for this time. <b>Total demand</b> also counts work on buyers' own servers. Model tokens are out of scope.</p>
 </section>
 
 <section>
 <h2>Five reasons for the bull case</h2>
 <ol class="points">
-  <li><b>The revenue is real and compounding.</b> Modal reports a $300M run rate for sandboxes alone<sup>1</sup>. E2B passed $100M, from $8M a year earlier<sup>2</sup>. Daytona projects $100M, from $1M four quarters earlier<sup>3</sup>. The bull case needs only about 2× a year from here.</li>
-  <li><b>Sandboxes become a default part of every agent.</b> Among US enterprise AI builders, code sandbox use rose from 11% to 40% in one year<sup>4</sup>. <i>Bull setting:</i> 2030 adoption is 1.5× the mid case. For example, 75% of software organizations instead of 50%, and 27% of enterprises for workflows instead of 18%.</li>
-  <li><b>Each agent does more work.</b> Agents now run for hours, split work across parallel sub-agents, and retry until tests pass. Labs also train agents with reinforcement learning (RL) in thousands of parallel environments. About 70% of Daytona's revenue comes from this work<sup>7</sup>. <i>Bull setting:</i> 25% more tasks for each adopter in 2030, for 1147 billion sandbox runs a year.</li>
-  <li><b>Model labs send work to vendors.</b> Anthropic lists 11 sandbox providers for its Managed Agents<sup>5</sup>. OpenAI lists nine partners for its Agents API<sup>6</sup>. Companies that build their own agents also rent: Ramp runs each session of its coding agent in a Modal sandbox<sup>10</sup>. <i>Bull setting:</i> vendors keep their 2026 share of organization work (60%) instead of falling to 55%.</li>
+  <li><b>The revenue is real and compounding.</b> Modal reports a $300M run rate for sandboxes alone<sup>1</sup>. E2B passed $100M, from $8M a year earlier<sup>2</sup>. Daytona projected $100M in October, from $1M four quarters earlier<sup>3</sup>.</li>
+  <li><b>Sandboxes become a default part of every agent.</b> Among US enterprise AI builders, code sandbox use rose from 11% to 40% in one year<sup>4</sup>. <i>Bull setting:</i> 2030 adoption is 1.5× the mid case. For example, 75% of software organizations instead of 50%.</li>
+  <li><b>Each agent does more work.</b> Agents now run for hours, split work across parallel sub-agents, and retry until tests pass. Labs also train agents with reinforcement learning (RL) in thousands of parallel environments. At one of the three leaders, this work brings about 70% of revenue<sup>7</sup>. <i>Bull setting:</i> 25% more tasks for each adopter in 2030, for 1147 billion sandbox runs a year.</li>
+  <li><b>Model labs send work to vendors.</b> Anthropic lists 11 sandbox providers for its Managed Agents<sup>5</sup>. OpenAI lists nine partners for its Agents API<sup>6</sup>. Companies that build their own agents also rent: Ramp runs its coding agent on Modal<sup>9</sup>. <i>Bull setting:</i> vendors keep their 2026 share of organization work (60%) instead of falling to 55%.</li>
   <li><b>Personal agents create a mass market.</b> Meta Muse passed 10 million setups about six weeks after launch<sup>8</sup>. OpenAI, Google, xAI, and Anthropic all ship similar agents, each with its own cloud computer. <i>Bull setting:</i> 280 million people use one in 2030 (10% of weekly AI users), and vendors host 25% of them.</li>
 </ol>
 <figure>
-  <figcaption>Figure 1. Vendor revenue, bull case against mid case<span>Both cases start from the same 2026 level. The gap opens after 2027.</span></figcaption>
-  <div class="cols pair" role="img" aria-label="Vendor revenue, mid and bull cases, 2026 to 2030"><div class="col"><b>$1.54B</b><div class="bars"><i style="height:5.90%;background:var(--axis)" title="Mid $1.54B"></i><i style="height:5.90%;background:var(--accent)" title="Bull $1.54B"></i></div><span>2026</span></div><div class="col"><b>$4.49B</b><div class="bars"><i style="height:12.47%;background:var(--axis)" title="Mid $3.26B"></i><i style="height:17.19%;background:var(--accent)" title="Bull $4.49B"></i></div><span>2027</span></div><div class="col"><b>$8.92B</b><div class="bars"><i style="height:21.33%;background:var(--axis)" title="Mid $5.58B"></i><i style="height:34.13%;background:var(--accent)" title="Bull $8.92B"></i></div><span>2028</span></div><div class="col"><b>$15.7B</b><div class="bars"><i style="height:33.60%;background:var(--axis)" title="Mid $8.78B"></i><i style="height:59.92%;background:var(--accent)" title="Bull $15.7B"></i></div><span>2029</span></div><div class="col"><b>$26.1B</b><div class="bars"><i style="height:50.98%;background:var(--axis)" title="Mid $13.3B"></i><i style="height:100.00%;background:var(--accent)" title="Bull $26.1B"></i></div><span>2030</span></div></div><div class="legend"><span><i class="sw" style="background:var(--accent)"></i>Bull case (labels)</span><span><i class="sw" style="background:var(--axis)"></i>Mid case: $1.54B, $3.26B, $5.58B, $8.78B, $13.3B</span></div>
+  <figcaption>Figure 1. Vendor revenue, bull case against mid case<span>Both cases start from the same 2026 estimate. Percentages show bull-case growth from the year before.</span></figcaption>
+  <div class="cols pair" role="img" aria-label="Vendor revenue, mid and bull cases, 2026 to 2030"><div class="col"><b>$1.54B</b><div class="bars"><i style="height:5.90%;background:var(--axis)" title="Mid $1.54B"></i><i style="height:5.90%;background:var(--accent)" title="Bull $1.54B"></i></div><span>2026</span><em>&nbsp;</em></div><div class="col"><b>$4.49B</b><div class="bars"><i style="height:12.47%;background:var(--axis)" title="Mid $3.26B"></i><i style="height:17.19%;background:var(--accent)" title="Bull $4.49B"></i></div><span>2027</span><em>+191%</em></div><div class="col"><b>$8.92B</b><div class="bars"><i style="height:21.33%;background:var(--axis)" title="Mid $5.58B"></i><i style="height:34.14%;background:var(--accent)" title="Bull $8.92B"></i></div><span>2028</span><em>+99%</em></div><div class="col"><b>$15.7B</b><div class="bars"><i style="height:33.60%;background:var(--axis)" title="Mid $8.78B"></i><i style="height:59.93%;background:var(--accent)" title="Bull $15.7B"></i></div><span>2029</span><em>+76%</em></div><div class="col"><b>$26.1B</b><div class="bars"><i style="height:50.98%;background:var(--axis)" title="Mid $13.3B"></i><i style="height:100.00%;background:var(--accent)" title="Bull $26.1B"></i></div><span>2030</span><em>+67%</em></div></div><div class="legend"><span><i class="sw" style="background:var(--accent)"></i>Bull case (labels)</span><span><i class="sw" style="background:var(--axis)"></i>Mid case: $1.54B, $3.26B, $5.58B, $8.78B, $13.3B</span></div>
 </figure>
 </section>
 
@@ -212,32 +219,49 @@ footer { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); bord
 <h2>Where the extra revenue comes from</h2>
 <figure>
   <figcaption>Figure 2. From the mid case to the bull case, 2030<span>Each change is added in turn. More adoption and more work for each agent give two-thirds of the gain.</span></figcaption>
-  <div class="wf"><div class="row"><div class="lab"><span>Mid case, 2030</span><span class="x">$13.3B</span></div><div class="track"><div class="seg" style="left:0.00%;width:50.98%;background:var(--axis)"></div></div></div><div class="row"><div class="lab"><span>More organizations adopt agents</span><span class="x">+$5.22B</span></div><div class="track"><div class="seg" style="left:50.98%;width:19.96%;background:var(--accent)"></div></div></div><div class="row"><div class="lab"><span>Each adopter runs more work</span><span class="x">+$3.22B</span></div><div class="track"><div class="seg" style="left:70.94%;width:12.33%;background:var(--accent)"></div></div></div><div class="row"><div class="lab"><span>Vendors keep their share (organizations)</span><span class="x">+$1.67B</span></div><div class="track"><div class="seg" style="left:83.28%;width:6.38%;background:var(--accent)"></div></div></div><div class="row"><div class="lab"><span>Vendors keep their share (personal agents)</span><span class="x">+$772M</span></div><div class="track"><div class="seg" style="left:89.66%;width:2.95%;background:var(--accent)"></div></div></div><div class="row"><div class="lab"><span>Personal agents reach twice as many people</span><span class="x">+$1.93B</span></div><div class="track"><div class="seg" style="left:92.61%;width:7.39%;background:var(--accent)"></div></div></div><div class="row"><div class="lab"><span>Bull case, 2030</span><span class="x">$26.1B</span></div><div class="track"><div class="seg" style="left:0.00%;width:100.00%;background:var(--ink-2)"></div></div></div></div>
+  <div class="wf"><div class="row"><div class="lab"><span>Mid case, 2030</span><span class="x">$13.3B</span></div><div class="track"><div class="seg" style="left:0.00%;width:50.98%;background:var(--axis)"></div></div></div><div class="row"><div class="lab"><span>More organizations adopt agents</span><span class="x">+$5.22B</span></div><div class="track"><div class="seg" style="left:50.98%;width:19.97%;background:var(--accent)"></div></div></div><div class="row"><div class="lab"><span>Each adopter runs more work</span><span class="x">+$3.22B</span></div><div class="track"><div class="seg" style="left:70.95%;width:12.33%;background:var(--accent)"></div></div></div><div class="row"><div class="lab"><span>Vendors keep their share (organizations)</span><span class="x">+$1.67B</span></div><div class="track"><div class="seg" style="left:83.27%;width:6.38%;background:var(--accent)"></div></div></div><div class="row"><div class="lab"><span>Vendors keep their share (personal agents)</span><span class="x">+$772M</span></div><div class="track"><div class="seg" style="left:89.66%;width:2.95%;background:var(--accent)"></div></div></div><div class="row"><div class="lab"><span>Personal agents reach twice as many people</span><span class="x">+$1.93B</span></div><div class="track"><div class="seg" style="left:92.61%;width:7.39%;background:var(--accent)"></div></div></div><div class="row"><div class="lab"><span>Bull case, 2030</span><span class="x">$26.1B</span></div><div class="track"><div class="seg" style="left:0.00%;width:100.00%;background:var(--ink-2)"></div></div></div></div>
 </figure>
-<p>The model counts work, not companies: organizations × adoption × tasks × share that needs a sandbox × runs × resources × list price. Vendor revenue is the part that vendors host, at 65% of list price, plus platform fees. The bull case changes only the five 2030 inputs above. Prices stay flat.</p>
+<p>The model counts work: organizations × adoption × tasks × share that needs a sandbox × runs × resources × list price. Vendor revenue is the vendor-hosted part, at 65% of list price, plus platform fees. Prices stay flat in the bull case.</p>
 </section>
 
 <section>
-<h2>Why the bull case is credible</h2>
+<h2>How firm the numbers are</h2>
 <ul>
-  <li><b>It starts from observed revenue.</b> The 2026 figure, $1.54B, is inside the range that reported run rates imply. Three vendors report $500M. If they hold 30–60% of the market, the market is $833M–$1.67B.</li>
-  <li><b>It assumes slower growth than today.</b> The bull case grows about 2× a year. The three leaders grew 12–37× in 2026.</li>
-  <li><b>It fits within hardware spend.</b> Futurum expects $165B of spend in 2030 on server CPUs that run sandboxes, orchestration, and agent tools<sup>9</sup>. Bull-case total demand is 46% of that. In 2026 it is 15%.</li>
-  <li><b>It survives the main risks.</b> Big buyers can move 30% of the work in-house, and prices can fall 10% a year. With both, the bull case still gives $13.7B in 2030, about the mid case (Figure 3).</li>
+  <li><b>2026 is an estimate, not a measurement.</b> Three vendors report about $500M of run rate. If they hold 30–60% of the market, the market is $833M–$1.67B. The model's $1.54B sits inside that range, but no source measures their share.</li>
+  <li><b>2027 carries the most risk.</b> The market must almost triple in 2027 (+191%). The leaders grew 12–37× in 2026, so this is a sharp slowdown, but still a large step. Growth then falls to +67% in 2030.</li>
+  <li><b>The risks are linked to the upside.</b> More volume invites competition and in-house builds. Alone, 30% in-house gives $18.6B and prices down 10% a year give $19.2B. With 30% in-house and prices down 20% a year, bull volumes give $10.3B, below the mid case. At 30% a year, they give $7.89B.</li>
 </ul>
+</section>
+
+<section>
+<h2>What history says</h2>
 <figure>
-  <figcaption>Figure 3. Bull case under stress, 2030<span>The two main risks, applied alone and together.</span></figcaption>
-  <div class="hbars"><div class="hbar"><div class="lab"><span class="n">Bull case</span><span class="x">$26.1B</span></div><div class="track"><div class="fill" style="width:100.00%"></div></div></div><div class="hbar"><div class="lab"><span class="n">Big buyers move 30% in-house</span><span class="x">$18.6B</span></div><div class="track"><div class="fill" style="background:var(--ink-2);width:71.03%"></div></div><div class="sub">−29%</div></div><div class="hbar"><div class="lab"><span class="n">List prices fall 10% a year</span><span class="x">$19.2B</span></div><div class="track"><div class="fill" style="background:var(--ink-2);width:73.59%"></div></div><div class="sub">−26%</div></div><div class="hbar"><div class="lab"><span class="n">Both risks together</span><span class="x">$13.7B</span></div><div class="track"><div class="fill" style="background:var(--ink-2);width:52.55%"></div></div><div class="sub">−47%; about equal to the mid case</div></div><div class="hbar"><div class="lab"><span class="n">Mid case, no risks applied</span><span class="x">$13.3B</span></div><div class="track"><div class="fill" style="background:var(--axis);width:50.98%"></div></div></div></div>
+  <figcaption>Figure 3. Growth a year: past markets and companies against the sandbox cases<span>Grey: whole markets. Dark: single companies (recognized revenue). Blue: this model (run-rate estimates).</span></figcaption>
+  <div class="hbars"><div class="hbar"><div class="lab"><span class="n">Cloud IaaS market, 2022–2024</span><span class="x">20%</span></div><div class="track"><div class="fill" style="background:var(--axis);width:9.83%"></div></div></div><div class="hbar"><div class="lab"><span class="n">RPA software market, 2018–2024</span><span class="x">27%</span></div><div class="track"><div class="fill" style="background:var(--axis);width:13.65%"></div></div></div><div class="hbar"><div class="lab"><span class="n">AWS, 2016–2018</span><span class="x">45%</span></div><div class="track"><div class="fill" style="background:var(--ink-2);width:22.57%"></div></div></div><div class="hbar"><div class="lab"><span class="n">Datadog, 2019–2023</span><span class="x">56%</span></div><div class="track"><div class="fill" style="background:var(--ink-2);width:27.82%"></div></div></div><div class="hbar"><div class="lab"><span class="n">Snowflake, FY2021–FY2025</span><span class="x">57%</span></div><div class="track"><div class="fill" style="background:var(--ink-2);width:28.68%"></div></div></div><div class="hbar"><div class="lab"><span class="n">Shopify, 2016–2020</span><span class="x">66%</span></div><div class="track"><div class="fill" style="background:var(--ink-2);width:32.83%"></div></div></div><div class="hbar"><div class="lab"><span class="n">Zoom, FY2019–FY2021</span><span class="x">183%</span></div><div class="track"><div class="fill" style="background:var(--ink-2);width:91.47%"></div></div></div><div class="hbar"><div class="lab"><span class="n">CoreWeave, 2023–2025</span><span class="x">373%</span></div><div class="track"><div class="fill" style="background:var(--ink-2);width:100.00%"></div></div><div class="sub">Bar cut off at 200%.</div></div><div class="hbar"><div class="lab"><span class="n">Sandboxes, mid case, 2026–2030</span><span class="x">71%</span></div><div class="track"><div class="fill" style="width:35.71%"></div></div></div><div class="hbar"><div class="lab"><span class="n">Sandboxes, bull case, 2026–2030</span><span class="x">103%</span></div><div class="track"><div class="fill" style="width:51.43%"></div></div></div></div>
 </figure>
+<ul>
+  <li><b>The forecast needs company-like growth for a whole market.</b> Cloud infrastructure and RPA grew 20–27% a year. The mid case needs 71%, faster than Snowflake or Shopify grew as single companies. The bull case needs 103%. Only demand shocks, Zoom and CoreWeave, grew faster, and only for two years.</li>
+  <li><b>The bull case for 2030 is about the size of AWS in 2018</b> ($25.7B<sup>13</sup>). AWS sold many services; sandboxes are one workload.</li>
+  <li><b>Adoption is not the same as vendor revenue.</b> Containers and serverless became standard, but clouds took much of the revenue. RPA was called inevitable and reached $3.6B in 2024<sup>14</sup>. CoreWeave grew 22× in two years and still lost $1.17B in 2025<sup>13</sup>.</li>
+  <li><b>Slower growth still gives a real market.</b> From $1.54B, 30% a year gives $4.41B in 2030 and 50% a year gives $7.81B.</li>
+</ul>
 </section>
 
 <section>
-<h2>What the bears say, and the answer</h2>
+<h2>Who captures the value</h2>
+<p>More sandbox use does not guarantee vendor revenue. The same work can run in four places:</p>
 <ul>
-  <li><b>“Big buyers will build their own.”</b> Some will: OpenAI bought Ona<sup>12</sup>, and Meta owns Manus. But the labs' own agent services list outside vendors as options<sup>5, 6</sup>, and the long tail of agent builders rents.</li>
-  <li><b>“Sandboxes are a commodity.”</b> Basic isolation is cheap: Anthropic includes sandbox time at $0.08 an hour<sup>11</sup>. Value moves to saved state, persistence, scale, and enterprise controls, and vendors now sell all of these. Lower prices also increase volume.</li>
-  <li><b>“The clouds will win.”</b> That changes who wins, not the size of the market. Cloud sandbox revenue counts as vendor revenue here.</li>
+  <li><b>Independent vendors.</b> The model's provider list has more than 60 products, from sandbox platforms to browser and RL environments. Vendors win on fast starts, saved state, parallel copies, and Windows, macOS, and GPU machines. Some buyers replace their own sandbox platforms with a vendor once volume grows<sup>12</sup>.</li>
+  <li><b>Clouds.</b> All large clouds now sell sandboxes. They count as vendor revenue here, but they set the price floor.</li>
+  <li><b>Lab runtimes.</b> Anthropic includes sandbox time at $0.08 an hour<sup>10</sup>. The model's mid list price for the same machine is $0.131 an hour. Labs are both a channel and a competitor<sup>5, 6</sup>.</li>
+  <li><b>In-house.</b> OpenAI bought Ona to run Codex agents inside customer clouds<sup>11</sup>. The largest buyers can build their own fleets.</li>
 </ul>
+<p>The model measures revenue, not gross margin. Vendors that rent servers from clouds partly resell compute. Snowflake shows that a large business can still grow on rented cloud servers. Their margin depends on how full they keep their machines and on features that clouds lack. Past markets point to four outcomes: a new default layer; a specialist market that grows 30–50% a year; cheap, bundled execution, with value moving to security, saved state, and control; or a market held by clouds and labs. The outcomes differ in who keeps the revenue.</p>
+</section>
+
+<section>
+<h2>Bottom line</h2>
+<p>The bull case asks a whole market to grow like a breakout company. That is demanding. The firmer claim is this: agents create a new class of compute demand, and even the growth rates of past markets give a market of several billion dollars by 2030. The winners will turn sandbox-hours into security, control, and lasting developer habits.</p>
 </section>
 
 <section>
@@ -246,32 +270,31 @@ footer { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); bord
   <thead><tr><th>Case</th><th class="n">Vendor revenue 2026</th><th class="n">Vendor revenue 2030</th><th class="n">Total demand 2030</th></tr></thead>
   <tbody>
     <tr><td>Low</td><td class="n">$574M</td><td class="n">$4.52B</td><td class="n">$16.4B</td></tr>
+    <tr><td>Joint downside (bull volumes)</td><td class="n">$1.54B</td><td class="n">$10.3B</td><td class="n">$42.2B</td></tr>
     <tr><td>Mid (central)</td><td class="n">$1.54B</td><td class="n">$13.3B</td><td class="n">$41.7B</td></tr>
     <tr class="mid"><td>Bull</td><td class="n">$1.54B</td><td class="n">$26.1B</td><td class="n">$75.7B</td></tr>
-    <tr><td>High (outer bound)</td><td class="n">$39.6B</td><td class="n">$499B</td><td class="n">$957B</td></tr>
+    <tr><td>Outer bound</td><td class="n">$39.6B</td><td class="n">$499B</td><td class="n">$957B</td></tr>
   </tbody>
 </table>
-<p class="small muted">The bull case is the mid case with five 2030 inputs raised. The high case sets every input to its maximum at once and exceeds the whole server CPU market, so it is not a forecast.</p>
+<p class="small muted">Joint downside: bull case, prices down 20% a year, 30% moved in-house by 2030. Outer bound: every input at its maximum; not a forecast.</p>
 </section>
 
 <section>
-<h2>What to watch</h2>
-<p>The bull case is on track if these things happen by the end of 2027:</p>
+<h2>What to watch by the end of 2027</h2>
 <ul>
   <li>The three leaders together pass about $1.57B of run rate (35% of a $4.49B market).</li>
   <li>More than half of enterprise AI builders use code sandboxes.</li>
-  <li>Lab agent services keep outside sandbox vendors as default options.</li>
-  <li>The price of one sandbox-hour stays near today's level.</li>
+  <li>The price of one sandbox-hour stays near today's level, and lab runtimes keep outside vendors as options.</li>
+  <li>Leaders disclose gross margins that stay high as they grow.</li>
 </ul>
 </section>
 
 <section>
 <h2>Sources</h2>
-<ol class="sources"><li>Modal: $1B annualized run rate and Series D, 14 Oct 2026. <a href="https://modal.com/blog/1-billion-annualized-run-rate-series-d" rel="noopener noreferrer">modal.com/blog/1-billion-annualized-run-rate-series-d</a></li><li>E2B press release on Yahoo Finance, 5 Nov 2026. <a href="https://finance.yahoo.com/technology/ai/articles/e2b-gives-ai-agents-own-150000787.html" rel="noopener noreferrer">finance.yahoo.com/technology/ai/articles/e2b-gives-ai-agents-own-150000787.html</a></li><li>Daytona: $1M to $100M run rate in four quarters, 3 Nov 2026. <a href="https://www.daytona.io/dotfiles/1m-to-100m-run-rate-in-4-quarters" rel="noopener noreferrer">daytona.io/dotfiles/1m-to-100m-run-rate-in-4-quarters</a></li><li>Menlo Ventures: 2026, The State of Enterprise AI, 3 Nov 2026. <a href="https://menlovc.com/perspective/2026-the-state-of-enterprise-ai/" rel="noopener noreferrer">menlovc.com/perspective/2026-the-state-of-enterprise-ai</a></li><li>Anthropic: Managed Agents self-hosted sandboxes. <a href="https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes" rel="noopener noreferrer">platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes</a></li><li>OpenAI Developer Community: Agents API and hosted sandboxes, 10 Sep 2026. <a href="https://community.openai.com/t/introducing-the-agents-api-and-hosted-sandboxes/1396481" rel="noopener noreferrer">community.openai.com/t/introducing-the-agents-api-and-hosted-sandboxes/1396481</a></li><li>TNW: Daytona CEO on growth and post-training revenue, 20 Oct 2026. <a href="https://thenextweb.com/news/ivan-burazin-daytona-ai-agent-sandboxes-tnw-podcast" rel="noopener noreferrer">thenextweb.com/news/ivan-burazin-daytona-ai-agent-sandboxes-tnw-podcast</a></li><li>TechCrunch: Meta says Muse has over 10M users, 21 Oct 2026. <a href="https://techcrunch.com/2026/10/21/meta-says-muse-has-over-10m-users-with-shopping-a-top-activity/" rel="noopener noreferrer">techcrunch.com/2026/10/21/meta-says-muse-has-over-10m-users-with-shopping-a-top-activity</a></li><li>Futurum: The $246 billion CPU opportunity, 1 Oct 2026. <a href="https://futurumgroup.com/insights/the-246-billion-cpu-opportunitys-winning-chip-has-not-been-designed-yet/" rel="noopener noreferrer">futurumgroup.com/insights/the-246-billion-cpu-opportunitys-winning-chip-has-not-been-designed-yet</a></li><li>Modal: How Ramp built a background coding agent on Modal. <a href="https://modal.com/blog/how-ramp-built-a-full-context-background-coding-agent-on-modal" rel="noopener noreferrer">modal.com/blog/how-ramp-built-a-full-context-background-coding-agent-on-modal</a></li><li>Anthropic: Claude pricing, Managed Agents section. <a href="https://platform.claude.com/docs/en/about-claude/pricing" rel="noopener noreferrer">platform.claude.com/docs/en/about-claude/pricing</a></li><li>Forbes: OpenAI buys Ona to run Codex agents inside enterprise clouds, 13 Jun 2026. <a href="https://www.forbes.com/sites/janakirammsv/2026/06/13/openai-buys-ona-to-run-codex-agents-inside-enterprise-clouds/" rel="noopener noreferrer">forbes.com/sites/janakirammsv/2026/06/13/openai-buys-ona-to-run-codex-agents-inside-enterprise-clouds</a></li></ol>
-<p class="small muted">Inputs, method, and every assumption are in the <a href="./">interactive model</a>. Vendor figures are self-reported. The bull case is not a model preset. It changes the five 2030 inputs listed above.</p>
+<ol class="sources"><li>Modal: $1B annualized run rate and Series D, 14 Oct 2026. <a href="https://modal.com/blog/1-billion-annualized-run-rate-series-d" rel="noopener noreferrer">modal.com</a></li><li>E2B press release on Yahoo Finance, 5 Nov 2026. <a href="https://finance.yahoo.com/technology/ai/articles/e2b-gives-ai-agents-own-150000787.html" rel="noopener noreferrer">finance.yahoo.com</a></li><li>Daytona: $1M to $100M run rate in four quarters, 3 Nov 2026. <a href="https://www.daytona.io/dotfiles/1m-to-100m-run-rate-in-4-quarters" rel="noopener noreferrer">daytona.io</a></li><li>Menlo Ventures: 2026, The State of Enterprise AI, 3 Nov 2026. <a href="https://menlovc.com/perspective/2026-the-state-of-enterprise-ai/" rel="noopener noreferrer">menlovc.com</a></li><li>Anthropic: Managed Agents self-hosted sandboxes. <a href="https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes" rel="noopener noreferrer">platform.claude.com</a></li><li>OpenAI Developer Community: Agents API and hosted sandboxes, 10 Sep 2026. <a href="https://community.openai.com/t/introducing-the-agents-api-and-hosted-sandboxes/1396481" rel="noopener noreferrer">community.openai.com</a></li><li>TNW: Daytona CEO on growth and post-training revenue, 20 Oct 2026. <a href="https://thenextweb.com/news/ivan-burazin-daytona-ai-agent-sandboxes-tnw-podcast" rel="noopener noreferrer">thenextweb.com</a></li><li>TechCrunch: Meta says Muse has over 10M users, 21 Oct 2026. <a href="https://techcrunch.com/2026/10/21/meta-says-muse-has-over-10m-users-with-shopping-a-top-activity/" rel="noopener noreferrer">techcrunch.com</a></li><li>Modal: How Ramp built a background coding agent on Modal. <a href="https://modal.com/blog/how-ramp-built-a-full-context-background-coding-agent-on-modal" rel="noopener noreferrer">modal.com</a></li><li>Anthropic: Claude pricing, Managed Agents section. <a href="https://platform.claude.com/docs/en/about-claude/pricing" rel="noopener noreferrer">platform.claude.com</a></li><li>Forbes: OpenAI buys Ona to run Codex agents inside enterprise clouds, 13 Jun 2026. <a href="https://www.forbes.com/sites/janakirammsv/2026/06/13/openai-buys-ona-to-run-codex-agents-inside-enterprise-clouds/" rel="noopener noreferrer">forbes.com</a></li><li>Daytona: Series B announcement with buyer moves from in-house platforms, 20 Oct 2026. <a href="https://www.daytona.io/dotfiles/daytona-raises-60m-series-b-to-build-the-agent-cloud" rel="noopener noreferrer">daytona.io</a></li><li>Annual reports: AWS 2018: <a href="https://www.sec.gov/Archives/edgar/data/1018724/000101872419000004/amzn-20181231x10k.htm" rel="noopener noreferrer">sec.gov</a>; Snowflake FY2025: <a href="https://www.sec.gov/Archives/edgar/data/1640147/000164014725000052/snow-20250131.htm" rel="noopener noreferrer">sec.gov</a>; Datadog 2023: <a href="https://www.sec.gov/Archives/edgar/data/1561550/000156155024000009/ddog-20231231.htm" rel="noopener noreferrer">sec.gov</a>; Zoom FY2021: <a href="https://www.sec.gov/Archives/edgar/data/1585521/000158552121000048/zm-20210131.htm" rel="noopener noreferrer">sec.gov</a>; CoreWeave 2025: <a href="https://www.sec.gov/Archives/edgar/data/1769628/000176962826000104/crwv-20251231.htm" rel="noopener noreferrer">sec.gov</a>; Shopify 2020: <a href="https://www.shopify.com/news/shopify-announces-fourth-quarter-and-full-year-2020-financial-results" rel="noopener noreferrer">shopify.com</a>.</li><li>Gartner: IaaS market 2024: <a href="https://www.gartner.com/en/newsroom/press-releases/2025-08-06-gartner-says-worldwide-iaas-public-cloud-services-market-grew-22-point-5-percent-in-2024" rel="noopener noreferrer">gartner.com</a>; RPA market share 2024: <a href="https://www.gartner.com/en/documents/6842834" rel="noopener noreferrer">gartner.com</a>.</li></ol>
 </section>
 
-<footer>Agent sandbox market model · bull case · as of 16 November 2026 · public edition</footer>
+<footer>As of 16 November 2026 · vendor figures are self-reported · method: <a href="./">interactive model</a> · <a href="./#answer?s=bull">bull case in the model</a></footer>
 </div>
 </body>
 </html>
