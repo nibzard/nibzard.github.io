@@ -6,20 +6,23 @@
 <title>Agent sandbox market size, 2026–2030</title>
 <meta name="description" content="How large is the market for isolated execution environments (sandboxes) for AI agents? An interactive model you can change.">
 <style>
-/* Palette: validated dataviz defaults. Four categorical slots, light and
-   dark steps. Aqua and yellow are below 3:1 on the light surface, so every
+/* Palette: validated dataviz defaults for series colors. Layout: a bento
+   grid of hairline cells; monospace for labels and numbers, sans-serif for
+   reading. Aqua and yellow are below 3:1 on the light surface, so every
    chart carries text labels or a table view. */
 :root {
   color-scheme: light;
-  --page: #f9f9f7;
+  --page: #f4f3ef;
   --surface: #ffffff;
-  --surface-2: #f0efec;
-  --ink: #0b0b0b;
-  --ink-2: #52514e;
-  --muted: #75736d;
-  --grid: #e1e0d9;
+  --surface-2: #f1f0ec;
+  --ink: #111110;
+  --ink-2: #4f4e4a;
+  --muted: #6f6d67;
+  --grid: #e6e5df;
   --axis: #c3c2b7;
-  --border: rgba(11,11,11,0.10);
+  --line: #d9d7cf;
+  --border: var(--line);
+  --dot: rgba(17,17,16,0.10);
   --accent: #2a78d6;
   --accent-ink: #1d5fb0;
   --up: #006300;
@@ -33,21 +36,24 @@
   --s5: #e87ba4; /* personal agents      */
   --neg: #2a78d6;
   --pos: #d03b3b;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --header-h: 0px;
-  --tabs-h: 64px;
+  --tabs-h: 60px;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-    --page: #0d0d0d;
-    --surface: #1a1a19;
-    --surface-2: #262625;
-    --ink: #ffffff;
+    --page: #0b0b0a;
+    --surface: #151514;
+    --surface-2: #1f1f1d;
+    --ink: #f5f5f2;
     --ink-2: #c3c2b7;
     --muted: #9a988f;
-    --grid: #2c2c2a;
-    --axis: #383835;
-    --border: rgba(255,255,255,0.12);
+    --grid: #2a2a28;
+    --axis: #3a3a37;
+    --line: #2c2c2a;
+    --dot: rgba(255,255,255,0.08);
     --accent: #3987e5;
     --accent-ink: #7fb2f0;
     --up: #0ca30c;
@@ -69,49 +75,52 @@ body {
   margin: 0;
   background: var(--page);
   color: var(--ink);
-  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: 16px/1.55 var(--sans);
   padding-bottom: calc(var(--tabs-h) + env(safe-area-inset-bottom) + 24px);
 }
-h1, h2, h3 { line-height: 1.25; margin: 0; }
-h2 { font-size: 1.3rem; margin: 28px 0 8px; }
-h3 { font-size: 1.05rem; margin: 20px 0 6px; }
+h1, h2, h3 { line-height: 1.3; margin: 0; font-family: var(--mono); letter-spacing: -0.01em; }
+h2 { font-size: 1rem; font-weight: 700; margin: 28px 0 8px; display: flex; align-items: baseline; gap: 8px; }
+h2::before { content: ""; flex: none; width: 8px; height: 8px; background: var(--accent); transform: translateY(-1px); }
+h3 { font-size: 0.9375rem; font-weight: 700; margin: 20px 0 6px; }
 p { margin: 8px 0; }
 ul, ol { margin: 8px 0; padding-left: 1.3rem; }
 li { margin: 4px 0; }
-a { color: var(--accent-ink); }
+a { color: var(--accent-ink); text-underline-offset: 2px; }
 button, input, select { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .num { font-variant-numeric: tabular-nums; }
 .muted { color: var(--muted); }
 .small { font-size: 0.875rem; }
+code { font-family: var(--mono); font-size: 0.875em; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+.eyebrow { font-family: var(--mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 
 /* ------------------------------------------------ sticky header */
 .top {
   position: sticky; top: 0; z-index: 20;
-  background: color-mix(in srgb, var(--page) 92%, transparent);
+  background: color-mix(in srgb, var(--page) 94%, transparent);
   -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--line);
   padding-top: env(safe-area-inset-top);
 }
 .top .wrap { padding-top: 8px; padding-bottom: 8px; }
 .top-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.brand { font-weight: 700; font-size: 0.95rem; }
+.brand { font-family: var(--mono); font-weight: 700; font-size: 0.8125rem; }
 .brand span { font-weight: 400; color: var(--muted); }
-.results { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 6px 0 8px; }
-.res { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; min-width: 0; }
-.res .k { font-size: 0.75rem; color: var(--ink-2); display: flex; justify-content: space-between; gap: 6px; }
-.res .v { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }
-.res .d { font-size: 0.75rem; font-weight: 600; }
+.results { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); margin: 6px 0 8px; }
+.res { background: var(--surface); padding: 6px 10px; min-width: 0; }
+.res .k { font-family: var(--mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); display: flex; justify-content: space-between; gap: 6px; }
+.res .v { font-family: var(--mono); font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
+.res .d { font-weight: 700; letter-spacing: 0; }
 .d.up { color: var(--up); } .d.down { color: var(--down); }
 .controls { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
-.seg { display: inline-flex; background: var(--surface-2); border-radius: 9px; padding: 2px; gap: 2px; }
+.seg { display: inline-flex; border: 1px solid var(--line); background: var(--line); gap: 1px; }
 .seg button {
-  border: 0; background: transparent; border-radius: 7px; min-height: 36px; min-width: 36px;
-  padding: 0 7px; font-size: 0.875rem; color: var(--ink-2); cursor: pointer;
+  border: 0; background: var(--surface); min-height: 36px; min-width: 36px;
+  padding: 0 8px; font-family: var(--mono); font-size: 0.8125rem; color: var(--ink-2); cursor: pointer;
 }
-.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 650; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); font-weight: 700; }
 .modbar { display: none; margin-top: 8px; font-size: 0.8125rem; color: var(--ink-2); align-items: center; justify-content: space-between; gap: 8px; }
 .modbar.on { display: flex; }
 .linkbtn { border: 0; background: none; color: var(--accent-ink); font-weight: 600; padding: 6px 0; cursor: pointer; text-decoration: underline; }
@@ -119,63 +128,69 @@ button, input, select { font: inherit; color: inherit; }
 /* ------------------------------------------------ tabs */
 nav.tabs {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
-  background: var(--surface); border-top: 1px solid var(--border);
+  background: var(--surface); border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom);
 }
 nav.tabs ul { list-style: none; margin: 0 auto; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); max-width: 760px; }
 nav.tabs li { margin: 0; }
 nav.tabs a {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-  height: var(--tabs-h); text-decoration: none; color: var(--muted); font-size: 0.75rem; font-weight: 600;
+  height: var(--tabs-h); text-decoration: none; color: var(--muted); font-family: var(--mono); font-size: 0.6875rem; font-weight: 600;
 }
-nav.tabs a .ico { font-size: 1.15rem; line-height: 1; }
-nav.tabs a[aria-current="page"] { color: var(--accent-ink); }
-nav.tabs a[aria-current="page"] .ico { transform: scale(1.1); }
-@media (min-width: 820px) {
-  body { padding-bottom: 48px; }
-  nav.tabs { position: sticky; top: var(--header-h); bottom: auto; border-top: 0; border-bottom: 1px solid var(--border); background: var(--page); }
-  nav.tabs a { flex-direction: row; height: 48px; font-size: 0.9375rem; gap: 6px; }
-  nav.tabs a[aria-current="page"] { box-shadow: inset 0 -2px 0 var(--accent); }
-}
+nav.tabs a .ico { font-size: 1.1rem; line-height: 1; font-family: var(--sans); }
+nav.tabs a[aria-current="page"] { color: var(--ink); box-shadow: inset 0 2px 0 var(--accent); }
 
 /* ------------------------------------------------ content */
 main { padding-top: 8px; }
 .tab[hidden] { display: none; }
-.lede { font-size: 1.2rem; line-height: 1.45; margin: 16px 0 4px; }
-.lede b { white-space: nowrap; }
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 14px; margin: 12px 0; }
+.lede { font-size: 1.15rem; line-height: 1.5; margin: 16px 0 4px; }
+.lede b { white-space: nowrap; font-family: var(--mono); }
+h1.lede { font-size: 1.1rem; }
+.card { background: var(--surface); border: 1px solid var(--line); padding: 16px; margin: 12px 0; }
 .card > h3:first-child, .card > h2:first-child { margin-top: 0; }
-.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
-.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
-.tile.wide { grid-column: 1 / -1; }
-.tile .k { font-size: 0.8125rem; color: var(--ink-2); }
-.tile .v { font-size: 1.75rem; font-weight: 750; letter-spacing: -0.02em; line-height: 1.15; margin-top: 2px; }
-.tile .r { font-size: 0.8125rem; color: var(--muted); margin-top: 4px; }
-.note { background: var(--warn-bg); border-left: 4px solid var(--warn-edge); border-radius: 8px; padding: 10px 12px; margin: 12px 0; font-size: 0.9375rem; }
-.cta { display: inline-block; margin-top: 6px; font-weight: 600; color: var(--accent-ink); }
-details { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin: 12px 0; }
-details > summary { cursor: pointer; padding: 12px 14px; font-weight: 650; list-style: none; display: flex; justify-content: space-between; gap: 8px; }
+.tile { background: var(--surface); padding: 14px 16px; }
+.tile .k { font-family: var(--mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.tile .v { font-family: var(--mono); font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; margin-top: 6px; }
+.tile .r { font-size: 0.8125rem; color: var(--muted); margin-top: 6px; }
+.tile .r b { color: var(--ink); }
+.note { background: var(--warn-bg); border-left: 3px solid var(--warn-edge); padding: 10px 12px; margin: 12px 0; font-size: 0.9375rem; }
+.cta { display: inline-block; margin-top: 8px; font-family: var(--mono); font-size: 0.8125rem; font-weight: 700; color: var(--accent-ink); text-decoration: none; border-bottom: 1px solid currentColor; }
+details { background: var(--surface); border: 1px solid var(--line); margin: -1px 0 0; }
+details:first-of-type, .bento + details, h2 + details { margin-top: 12px; }
+details > summary { cursor: pointer; padding: 12px 40px 12px 16px; font-family: var(--mono); font-size: 0.875rem; font-weight: 700; list-style: none; display: block; position: relative; }
 details > summary::-webkit-details-marker { display: none; }
-details > summary::after { content: "+"; color: var(--muted); font-weight: 400; font-size: 1.2rem; line-height: 1; }
+details > summary::after { content: "+"; color: var(--muted); font-weight: 400; font-size: 1.1rem; line-height: 1; position: absolute; right: 16px; top: 13px; }
 details[open] > summary::after { content: "−"; }
-details > .body { padding: 0 14px 14px; }
+details > .body { padding: 0 16px 16px; }
 details.plain { background: transparent; border: 0; margin: 4px 0 0; }
-details.plain > summary { padding: 8px 0; font-weight: 600; font-size: 0.875rem; color: var(--accent-ink); justify-content: flex-start; }
+details.plain > summary { padding: 8px 0; font-size: 0.8125rem; color: var(--accent-ink); }
+details.plain > summary::after { position: static; margin-left: 6px; }
 details.plain > summary::after { content: "▾"; font-size: 0.875rem; }
 details.plain[open] > summary::after { content: "▴"; }
 details.plain > .body { padding: 0; }
 
+/* ------------------------------------------------ bento grid */
+.bento { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); margin: 14px 0; }
+.bento > * { background: var(--surface); padding: 16px; margin: 0; border: 0; min-width: 0; grid-column: 1 / -1; }
+.bento > .m1 { grid-column: auto; }
+.bento > * > h2:first-child, .bento > * > h3:first-child, .bento > * > .eyebrow:first-child + h2 { margin-top: 0; }
+.bento .hero { background-color: var(--surface); background-image: radial-gradient(var(--dot) 1px, transparent 1px); background-size: 14px 14px; padding: 20px 16px; }
+.bento .hero .lede, .bento .hero h1.lede { margin: 6px 0 0; }
+.bento .hero p:last-child { margin-bottom: 0; }
+.bento > .cell-list ul { margin-bottom: 0; }
+.bento > .tile { padding: 14px 16px; }
+
 /* legends */
 .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.8125rem; color: var(--ink-2); margin: 4px 0 8px; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
-.sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
+.sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; flex: none; }
 .sw.line { height: 2px; border-radius: 1px; width: 14px; background: var(--ink) !important; position: relative; }
 .sw.line::after { content: ""; position: absolute; left: 3px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--ink); }
 
 /* charts */
 .chart { width: 100%; }
 .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
-.chart text { font-size: 12px; fill: var(--ink-2); font-family: inherit; }
+.chart text { font-size: 12px; fill: var(--ink-2); font-family: var(--mono); }
 .chart .tick { fill: var(--muted); }
 .chart .val { fill: var(--ink); font-weight: 650; }
 .chart .gridline { stroke: var(--grid); stroke-width: 1; }
@@ -183,23 +198,23 @@ details.plain > .body { padding: 0; }
 .chart .hit { fill: transparent; cursor: pointer; }
 .chart .sel-band { fill: var(--surface-2); }
 .readout { font-size: 0.875rem; color: var(--ink-2); min-height: 2.6em; margin-top: 4px; }
-.readout b { color: var(--ink); }
+.readout b { color: var(--ink); font-family: var(--mono); }
 
 /* horizontal bar lists (HTML, so text never shrinks) */
 .hbars { display: grid; gap: 10px; margin: 8px 0; }
 .hbar .lab { display: flex; justify-content: space-between; gap: 8px; font-size: 0.875rem; }
 .hbar .lab .n { color: var(--ink-2); }
-.hbar .lab .x { font-weight: 650; white-space: nowrap; }
-.hbar .track { height: 12px; margin-top: 3px; position: relative; }
-.hbar .fill { height: 12px; border-radius: 0 4px 4px 0; background: var(--s1); min-width: 2px; }
-.hbar .sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+.hbar .lab .x { font-family: var(--mono); font-weight: 700; white-space: nowrap; font-size: 0.8125rem; }
+.hbar .track { height: 10px; margin-top: 4px; position: relative; background: var(--surface-2); }
+.hbar .fill { height: 10px; background: var(--s1); min-width: 2px; }
+.hbar .sub { font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
 .hbar .marker { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); }
 
 /* funnel */
 .funnel { display: grid; gap: 12px; margin-top: 8px; }
 .funnel .row .lab { display: flex; justify-content: space-between; gap: 8px; }
-.funnel .row .lab b { white-space: nowrap; }
-.funnel .bar { height: 22px; border-radius: 0 5px 5px 0; background: var(--accent); min-width: 3px; margin: 4px 0 2px; opacity: 0.9; }
+.funnel .row .lab b { white-space: nowrap; font-family: var(--mono); }
+.funnel .bar { height: 18px; background: var(--accent); min-width: 3px; margin: 4px 0 2px; opacity: 0.9; }
 .funnel .row:nth-child(2) .bar { opacity: 0.75; }
 .funnel .row:nth-child(3) .bar { opacity: 0.6; }
 .funnel .row:nth-child(4) .bar { opacity: 0.45; }
@@ -207,77 +222,101 @@ details.plain > .body { padding: 0; }
 
 /* calculation chain */
 .chain { margin: 8px 0; }
-.step { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
-.step .k { font-size: 0.8125rem; color: var(--ink-2); }
-.step .v { font-size: 1.25rem; font-weight: 700; }
+.step { background: var(--surface); border: 1px solid var(--line); padding: 10px 12px; }
+.step .k { font-family: var(--mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.step .v { font-family: var(--mono); font-size: 1.25rem; font-weight: 700; }
 .step .e { font-size: 0.8125rem; color: var(--muted); }
-.step.out { border-color: var(--accent); border-width: 2px; }
-.op { display: flex; align-items: center; gap: 10px; padding: 6px 0 6px 18px; font-size: 0.875rem; color: var(--ink-2); }
-.op .sym { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--surface-2); color: var(--ink); display: grid; place-items: center; font-weight: 700; }
+.step.out { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.op { display: flex; align-items: center; gap: 10px; padding: 6px 0 6px 18px; font-size: 0.875rem; color: var(--ink-2); border-left: 1px dashed var(--axis); margin-left: 12px; }
+.op .sym { flex: none; width: 26px; height: 26px; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink); display: grid; place-items: center; font-family: var(--mono); font-weight: 700; }
 .op b { color: var(--ink); }
 
 /* worked example */
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
-.chip { border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 6px 12px; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; }
-.chip[aria-pressed="true"] { border-color: var(--ink); font-weight: 650; }
-.math { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.8125rem; background: var(--surface-2); border-radius: 8px; padding: 10px; overflow-x: auto; white-space: pre; line-height: 1.6; }
+.chip { border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; font-family: var(--mono); font-size: 0.8125rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; }
+.chip[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--surface); font-weight: 700; }
+.math { font-family: var(--mono); font-size: 0.8125rem; background: var(--surface-2); border: 1px solid var(--line); padding: 10px; overflow-x: auto; white-space: pre; line-height: 1.6; }
 .math .r { font-weight: 700; color: var(--ink); }
 
 /* experiment levers */
-.lever { padding: 12px 0; border-top: 1px solid var(--border); }
-.lever:first-of-type { border-top: 0; }
+.lever { padding: 14px 0; border-top: 1px solid var(--line); }
+.lever:first-of-type { border-top: 0; padding-top: 0; }
 .lever .head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 .lever .name { font-weight: 650; }
-.lever .val { font-weight: 750; font-size: 1.1rem; white-space: nowrap; }
+.lever .val { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; white-space: nowrap; }
 .lever .what { font-size: 0.8125rem; color: var(--muted); margin-top: 2px; }
 .lever input[type=range] { width: 100%; margin: 10px 0 2px; height: 28px; accent-color: var(--accent); }
-.lever .ends { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); }
+.lever .ends { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.6875rem; color: var(--muted); }
 .lever.changed .val { color: var(--accent-ink); }
 .btnrow { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 0; }
-.btn { border: 1px solid var(--border); background: var(--surface); border-radius: 10px; padding: 8px 14px; min-height: 40px; cursor: pointer; font-weight: 600; font-size: 0.9375rem; }
-.btn.primary { background: var(--accent); color: #fff; border-color: transparent; }
+.btn { border: 1px solid var(--ink); background: var(--surface); padding: 8px 14px; min-height: 40px; cursor: pointer; font-family: var(--mono); font-weight: 700; font-size: 0.8125rem; }
+.btn:hover { background: var(--ink); color: var(--surface); }
 
 /* tornado (HTML) */
 .torn { display: grid; gap: 12px; }
 .torn .lab { font-size: 0.875rem; display: flex; justify-content: space-between; gap: 8px; }
-.torn .lab .x { color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.torn .track { position: relative; height: 12px; margin-top: 3px; background: linear-gradient(var(--axis), var(--axis)) center / 1px 100% no-repeat; }
-.torn .neg, .torn .pos { position: absolute; top: 0; height: 12px; }
-.torn .neg { background: var(--neg); border-radius: 4px 0 0 4px; }
-.torn .pos { background: var(--pos); border-radius: 0 4px 4px 0; }
+.torn .lab .x { color: var(--ink-2); white-space: nowrap; font-family: var(--mono); font-size: 0.8125rem; }
+.torn .track { position: relative; height: 10px; margin-top: 4px; background: linear-gradient(var(--axis), var(--axis)) center / 1px 100% no-repeat; }
+.torn .neg, .torn .pos { position: absolute; top: 0; height: 10px; }
+.torn .neg { background: var(--neg); }
+.torn .pos { background: var(--pos); }
 
 /* advanced inputs */
-.inp { display: grid; grid-template-columns: 1fr 112px; gap: 4px 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--border); }
+.inp { display: grid; grid-template-columns: 1fr 112px; gap: 4px 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
 .inp label { font-size: 0.875rem; }
-.inp input { width: 100%; padding: 8px 10px; border: 1px solid var(--axis); border-radius: 8px; background: var(--page); text-align: right; font-variant-numeric: tabular-nums; min-height: 40px; }
+.inp input { width: 100%; padding: 8px 10px; border: 1px solid var(--axis); background: var(--page); text-align: right; font-family: var(--mono); font-size: 0.875rem; font-variant-numeric: tabular-nums; min-height: 40px; }
 .inp input.ovr { border-color: var(--accent); border-width: 2px; }
 .inp input.bad { border-color: var(--down); }
 .inp .hint { grid-column: 1 / -1; font-size: 0.75rem; color: var(--muted); }
-.tag { display: inline-block; font-size: 0.6875rem; border: 1px solid var(--border); border-radius: 999px; padding: 0 6px; color: var(--ink-2); margin-left: 4px; white-space: nowrap; }
+.tag { display: inline-block; font-family: var(--mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.04em; border: 1px solid var(--line); padding: 0 5px; color: var(--ink-2); margin-left: 4px; white-space: nowrap; }
 
 /* segments */
 .segcard .hd { display: flex; align-items: center; gap: 8px; }
 .segcard .hd h3 { margin: 0; flex: 1; }
-.segcard .big { font-size: 1.5rem; font-weight: 750; }
+.segcard .big { font-family: var(--mono); font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
+#segcards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); margin: 14px 0; }
+#segcards > .card { margin: 0; border: 0; }
 .kv { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 0.9375rem; margin-top: 8px; }
 .kv dt { color: var(--ink-2); }
-.kv dd { margin: 0; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
-.stack100 { display: flex; height: 26px; border-radius: 6px; overflow: hidden; gap: 2px; margin: 8px 0; }
+.kv dd { margin: 0; font-family: var(--mono); font-size: 0.875rem; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.stack100 { display: flex; height: 22px; overflow: hidden; gap: 2px; margin: 8px 0; }
 .stack100 > div { min-width: 2px; }
 
 /* small tables */
 table { border-collapse: collapse; width: 100%; font-size: 0.875rem; }
-th, td { padding: 6px 4px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
-td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-thead th { color: var(--ink-2); font-weight: 600; font-size: 0.8125rem; }
+th, td { padding: 6px 4px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+td.n, th.n { text-align: right; font-family: var(--mono); font-size: 0.8125rem; white-space: nowrap; }
+thead th { color: var(--muted); font-family: var(--mono); font-weight: 600; font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; }
 
-.ok { color: var(--up); font-weight: 700; }
-.err { color: var(--down); font-weight: 700; }
-.verdict { display: inline-block; font-size: 0.75rem; font-weight: 700; border-radius: 999px; padding: 1px 8px; background: var(--surface-2); }
+.ok { color: var(--up); font-weight: 700; font-family: var(--mono); }
+.err { color: var(--down); font-weight: 700; font-family: var(--mono); }
+.verdict { display: inline-block; font-family: var(--mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; border: 1px solid var(--line); padding: 1px 6px; background: var(--surface-2); }
 .provlist { columns: 2 150px; column-gap: 16px; font-size: 0.875rem; padding-left: 1rem; }
-footer { color: var(--muted); font-size: 0.8125rem; margin: 32px 0 0; }
+footer { color: var(--muted); font-family: var(--mono); font-size: 0.75rem; margin: 32px 0 0; padding-top: 12px; border-top: 1px solid var(--line); }
 #err { display: none; }
 #err.on { display: block; }
+
+/* ------------------------------------------------ wide screens */
+@media (min-width: 820px) {
+  body { padding-bottom: 48px; }
+  nav.tabs { position: sticky; top: var(--header-h); bottom: auto; border-top: 0; border-bottom: 1px solid var(--line); background: var(--page); }
+  nav.tabs a { flex-direction: row; height: 46px; font-size: 0.8125rem; gap: 8px; }
+  nav.tabs a[aria-current="page"] { box-shadow: inset 0 -2px 0 var(--accent); }
+}
+@media (min-width: 1024px) {
+  .wrap, nav.tabs ul { max-width: 1120px; }
+  .top .wrap { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; }
+  .top .results { margin: 0; max-width: 460px; justify-self: center; width: 100%; }
+  .top .modbar { grid-column: 1 / -1; margin-top: 0; }
+  .bento { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .bento > .d2 { grid-column: span 2; }
+  .bento > .d3 { grid-column: span 3; }
+  .bento > .d4 { grid-column: span 4; }
+  .bento > .r2 { grid-row: span 2; }
+  #segcards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #segcards > .card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .tab > p, .tab > h1.lede { max-width: 72ch; }
+}
 </style>
 </head>
 <body>
@@ -320,13 +359,15 @@ footer { color: var(--muted); font-size: 0.8125rem; margin: 32px 0 0; }
 <!-- ============================================================ ANSWER -->
 <section class="tab" id="tab-answer" aria-labelledby="answer-h">
   <h1 class="sr" id="answer-h">The answer</h1>
-  <p class="lede" id="lede"></p>
-
-  <div class="tiles">
-    <div class="tile"><div class="k">Vendor revenue, 2026</div><div class="v num" id="t-m26"></div><div class="r" id="t-m26r"></div></div>
-    <div class="tile"><div class="k">Vendor revenue, 2030</div><div class="v num" id="t-m30"></div><div class="r" id="t-m30r"></div></div>
-    <div class="tile wide"><div class="k">Total demand, 2030 (if all of it were bought at market prices)</div><div class="v num" id="t-t30"></div><div class="r" id="t-t30r"></div></div>
+  <div class="bento">
+  <div class="hero">
+    <div class="eyebrow">Agent sandboxes · market size · as of 16 Nov 2026</div>
+    <p class="lede" id="lede"></p>
   </div>
+
+    <div class="tile m1 d2"><div class="k">Vendor revenue, 2026</div><div class="v num" id="t-m26"></div><div class="r" id="t-m26r"></div></div>
+    <div class="tile m1 d2"><div class="k">Vendor revenue, 2030</div><div class="v num" id="t-m30"></div><div class="r" id="t-m30r"></div></div>
+    <div class="tile d2"><div class="k">Total demand, 2030 (at market prices)</div><div class="v num" id="t-t30"></div><div class="r" id="t-t30r"></div></div>
 
   <div class="card">
     <h2 style="margin-top:0">Growth, 2026–2030</h2>
@@ -337,13 +378,13 @@ footer { color: var(--muted); font-size: 0.8125rem; margin: 32px 0 0; }
     <details class="plain"><summary>Show as a table</summary><div class="body" id="traj-table"></div></details>
   </div>
 
-  <div class="card">
+  <div class="card d3">
     <h2 style="margin-top:0">Four ways to measure the market</h2>
     <p class="small muted">Each number is a part of the one above it. Selected year and scenario.</p>
     <div class="funnel" id="funnel"></div>
   </div>
 
-  <div class="card">
+  <div class="card d3">
     <h2 style="margin-top:0">Check against reported run rates</h2>
     <p class="small muted">Three vendors published sandbox run rates in October and November 2026.</p>
     <div class="hbars" id="rr-mini"></div>
@@ -351,13 +392,14 @@ footer { color: var(--muted); font-size: 0.8125rem; margin: 32px 0 0; }
     <a class="cta" href="#check">See the estimate and its sources →</a>
   </div>
 
-  <div class="card">
+  <div class="card d2">
     <h2 style="margin-top:0">What moves the answer most</h2>
     <p class="small muted">Each input moved alone from its low to its high value. Change in vendor revenue.</p>
     <div class="torn" id="top3"></div>
     <a class="cta" href="#experiment">Change these numbers yourself →</a>
   </div>
 
+  <div class="cell-list d4">
   <h2>Read this before you quote a number</h2>
   <ul>
     <li><b>The mid case is the central estimate.</b> Low and high are bounds, not a confidence interval.</li>
@@ -368,23 +410,34 @@ footer { color: var(--muted); font-size: 0.8125rem; margin: 32px 0 0; }
     <li><b>Big buyers can build in-house.</b> If buyers that make up 30% of vendor-hosted demand move it to their own servers by 2030, mid vendor revenue for 2030 falls by nearly 30%. See the edge case on the <a href="#check">Check</a> tab.</li>
     <li><b>Personal agents add a lot of demand but little vendor revenue.</b> Meta, OpenAI, Google, and xAI run them on their own servers. The model assumes 10–15% reaches third-party sandbox vendors in the mid case.</li>
   </ul>
+  </div>
+  </div>
 </section>
 
 <!-- ============================================================ HOW -->
 <section class="tab" id="tab-how" aria-labelledby="how-h" hidden>
-  <h1 class="lede" id="how-h" style="font-weight:700">How the number is calculated</h1>
-  <p>The model counts work, not companies. It starts with organizations, estimates how many agent tasks they run, and prices the sandbox time those tasks use. Personal agents are counted by person and added at step 7.</p>
-
-  <div class="chain" id="chain"></div>
-
-  <h2>Worked example</h2>
-  <p class="small muted">The same steps for one segment, with every number shown.</p>
-  <div class="chips" id="we-chips" role="group" aria-label="Segment"></div>
-  <div id="we-body"></div>
-
-  <h2>Where the money goes</h2>
-  <p class="small muted">Total demand by what is billed. Selected year and scenario.</p>
-  <div class="hbars" id="spend"></div>
+  <div class="bento">
+  <div class="hero">
+    <div class="eyebrow">Method</div>
+    <h1 class="lede" id="how-h">How the number is calculated</h1>
+    <p>The model counts work, not companies. It starts with organizations, estimates how many agent tasks they run, and prices the sandbox time those tasks use. Personal agents are counted by person and added at step 7.</p>
+  </div>
+  <div class="d3">
+    <h2>The chain</h2>
+    <div class="chain" id="chain"></div>
+  </div>
+  <div class="d3">
+    <h2>Worked example</h2>
+    <p class="small muted">The same steps for one segment, with every number shown.</p>
+    <div class="chips" id="we-chips" role="group" aria-label="Segment"></div>
+    <div id="we-body"></div>
+  </div>
+  <div>
+    <h2>Where the money goes</h2>
+    <p class="small muted">Total demand by what is billed. Selected year and scenario.</p>
+    <div class="hbars" id="spend"></div>
+  </div>
+  </div>
 
   <details>
     <summary>Rules that prevent double counting</summary>
@@ -419,25 +472,32 @@ winnable SOM   = SAM × reachable share × win rate</div>
 
 <!-- ============================================================ EXPERIMENT -->
 <section class="tab" id="tab-experiment" aria-labelledby="exp-h" hidden>
-  <h1 class="lede" id="exp-h" style="font-weight:700">Experiment</h1>
-  <p>Move a slider. The numbers at the top update at once. Each slider scales the selected scenario, so “×1” means no change.</p>
-
-  <div class="card" id="levers"></div>
-  <div class="btnrow">
-    <button type="button" class="btn" id="reset">Reset all</button>
-    <button type="button" class="btn" id="share">Copy link to this version</button>
+  <div class="bento">
+  <div class="hero">
+    <div class="eyebrow">Your version</div>
+    <h1 class="lede" id="exp-h">Experiment</h1>
+    <p>Move a slider. The numbers at the top update at once. Each slider scales the selected scenario, so “×1” means no change.</p>
   </div>
-  <p class="small muted" id="share-msg" aria-live="polite"></p>
+  <div class="d4 r2">
+    <h2>Change the inputs</h2>
+    <div id="levers"></div>
+    <div class="btnrow">
+      <button type="button" class="btn" id="reset">Reset all</button>
+      <button type="button" class="btn" id="share">Copy link to this version</button>
+    </div>
+    <p class="small muted" id="share-msg" aria-live="polite"></p>
+  </div>
 
-  <div class="card">
+  <div class="card d2">
     <h2 style="margin-top:0">Your version against the default</h2>
     <div class="hbars" id="cmp"></div>
   </div>
 
-  <div class="card">
+  <div class="card d2">
     <h2 style="margin-top:0">What matters most now</h2>
     <p class="small muted">Each input moved alone to its low (blue) or high (red) value, from your current version. Change in vendor revenue.</p>
     <div class="torn" id="tornado"></div>
+  </div>
   </div>
 
   <details id="adv">
@@ -451,17 +511,26 @@ winnable SOM   = SAM × reachable share × win rate</div>
 
 <!-- ============================================================ SEGMENTS -->
 <section class="tab" id="tab-segments" aria-labelledby="seg-h" hidden>
-  <h1 class="lede" id="seg-h" style="font-weight:700">Five segments</h1>
-  <p>Share of total demand. Selected year and scenario.</p>
-  <div class="stack100" id="mix" role="img"></div>
-  <div class="legend" id="mix-legend"></div>
+  <div class="bento">
+  <div class="hero">
+    <div class="eyebrow">Demand by segment</div>
+    <h1 class="lede" id="seg-h">Five segments</h1>
+    <p>Share of total demand. Selected year and scenario.</p>
+    <div class="stack100" id="mix" role="img"></div>
+    <div class="legend" id="mix-legend"></div>
+  </div>
+  </div>
   <div id="segcards"></div>
 </section>
 
 <!-- ============================================================ CHECK -->
 <section class="tab" id="tab-check" aria-labelledby="check-h" hidden>
-  <h1 class="lede" id="check-h" style="font-weight:700">Reality check</h1>
-  <p>The model is built bottom-up from demand. Here it is compared with numbers it did not use as inputs.</p>
+  <div class="bento">
+  <div class="hero">
+    <div class="eyebrow">Outside evidence</div>
+    <h1 class="lede" id="check-h">Reality check</h1>
+    <p>The model is built bottom-up from demand. Here it is compared with numbers it did not use as inputs.</p>
+  </div>
 
   <div class="card">
     <h2 style="margin-top:0">Against earlier estimates</h2>
@@ -469,14 +538,14 @@ winnable SOM   = SAM × reachable share × win rate</div>
     <div id="recon"></div>
   </div>
 
-  <div class="card" id="hw-card">
+  <div class="card d3" id="hw-card">
     <h2 style="margin-top:0">Against hardware spend</h2>
     <p class="small muted">Nobody publishes a forecast for agent sandboxes alone. The nearest figure is what buyers spend on server CPUs that run sandboxes, orchestration, and agent tools<sup>[14]</sup>. Sandbox demand should be a part of it. Grey band: that CPU spend. Black tick: the whole server CPU market (2030). Dots: this model's total demand, low, mid, and high. Log scale.</p>
     <div id="hw"></div>
     <p class="small" id="hw-text"></p>
   </div>
 
-  <div class="card" id="rr-card">
+  <div class="card d3" id="rr-card">
     <h2 style="margin-top:0">Estimate from reported run rates</h2>
     <p class="small muted">Three vendors publish a sandbox run rate: annual revenue at the current monthly pace. Sources are numbered at the bottom of this tab.</p>
     <div class="hbars" id="vendors"></div>
@@ -489,7 +558,7 @@ winnable SOM   = SAM × reachable share × win rate</div>
     <details class="plain"><summary>Other vendor signals (no revenue figure)</summary><div class="body"><ul class="small" id="signals"></ul></div></details>
   </div>
 
-  <div class="card" id="inhouse-card">
+  <div class="card d3" id="inhouse-card">
     <h2 style="margin-top:0">Edge case: big buyers build in-house</h2>
     <p>The largest buyers can stop renting sandboxes and run their own. When they do, the work still happens, so total demand stays. Vendor revenue drops.</p>
     <p class="small muted">Stress test: buyers that make up <span id="ih-share"></span> of vendor-hosted demand move it in-house by 2030. The move starts at 0 in 2026 and grows in a straight line.</p>
@@ -506,7 +575,7 @@ winnable SOM   = SAM × reachable share × win rate</div>
     <p class="small muted">The model already puts 20% of organization demand on the buyer's own servers in the mid case, and 82–87% of personal-agent demand. This edge case moves more on top of that.</p>
   </div>
 
-  <div class="card" id="labs-card">
+  <div class="card d3" id="labs-card">
     <h2 style="margin-top:0">Model labs sell sandboxes too</h2>
     <p>Anthropic and OpenAI now run agents for developers, sandbox included. Both also let you bring your own sandbox.</p>
     <ul class="small">
@@ -525,6 +594,7 @@ winnable SOM   = SAM × reachable share × win rate</div>
     <div class="hbars" id="prices"></div>
   </div>
 
+  <div class="cell-list">
   <h2>Where the model is weak</h2>
   <ul>
     <li><b>The scenario spread is very wide.</b> The high case sets many inputs to their maximum at the same time. Use it as a ceiling only.</li>
@@ -538,6 +608,8 @@ winnable SOM   = SAM × reachable share × win rate</div>
     <li><b>GPU evaluation prices have no direct source.</b> The RL/evaluation segment rests on a placeholder price.</li>
     <li><b>Personal agents are new and thinly measured.</b> They launched between May and October 2026. Only Meta publishes user numbers (more than 10 million setups). The price of a personal-agent computer depends on how long it stays awake, and no provider discloses that.</li>
   </ul>
+  </div>
+  </div>
 
   <details>
     <summary>Upside scenario: self-improving AI (not a forecast)</summary>
