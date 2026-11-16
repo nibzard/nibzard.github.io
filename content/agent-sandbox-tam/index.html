@@ -363,6 +363,7 @@ footer { color: var(--muted); font-family: var(--mono); font-size: 0.75rem; marg
   <div class="hero">
     <div class="eyebrow">Agent sandboxes · market size · as of 16 Nov 2026</div>
     <p class="lede" id="lede"></p>
+    <a class="cta" href="report.html">Read the three-page report →</a>
   </div>
 
     <div class="tile m1 d2"><div class="k">Vendor revenue, 2026</div><div class="v num" id="t-m26"></div><div class="r" id="t-m26r"></div></div>
@@ -1819,7 +1820,7 @@ winnable SOM   = SAM × reachable share × win rate</div>
     const ratio = m26 / est;
     $('vendors-text').innerHTML = 'The ' + state.s + ' case is <b>' + (ratio >= 1 ? Number(ratio.toPrecision(2)) + ' times the estimate' : pct(ratio) + ' of the estimate') + '</b>. ' +
       'A run rate is the pace at the end of the year. These vendors grew 12–37× in 2026, so their calendar-year revenue is only about 30–50% of it. Read the model’s 2026 number as a year-end run rate. ' +
-      'Price check: E2B starts about 250 million computers a month and reports more than $100M a year, about $0.03 per start. The mid case bills about $0.02 per vendor-hosted run.' +
+      'Price check: E2B starts about 250 million computers a month and reports more than $100M a year, about $0.03 per start. The ' + state.s + ' case bills about $' + (function () { let mh = 0, hr = 0; for (const g of R.years[2026].segments) { mh += g.merchant_hosted; hr += g.runs * g.deployment.hosted; } return (mh / hr).toFixed(3); })() + ' per vendor-hosted run in 2026, computers and storage included.' +
       '<br><br><b>RL check.</b> Daytona says about 70% of its revenue comes from training agents<sup>[10]</sup>. If Modal earns 40% and E2B 20% from RL, the three earn about <b>$210M</b> from RL. ' +
       (function () { const g = R.years[2026].segments.find((x) => x.id === 'rl_evaluation'); return 'The ' + state.s + ' case puts RL/evaluation at <b>' + usd(g.merchant) + '</b> of 2026 vendor revenue (' + pct(g.merchant / R.years[2026].totals.merchant) + ').'; })();
     $('signals').innerHTML = SUPPLY.filter((r) => !/Modal Sandboxes|^E2B$|^Daytona$/.test(r.provider)).map((r) => '<li><b>' + esc(r.provider) + ':</b> ' + esc(r.figure.replace(/\s*\(?\b(C-\d+)\)?/g, '').replace(/;\s*$/, '')) + ' <span class="muted">(' + esc(r.asof) + ')</span></li>').join('');

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Agent sandboxes: the case for a $13.3B market by 2030</title>
+<meta name="description" content="A short report on the size of the market for isolated computers (sandboxes) that AI agents use, 2026 to 2030.">
+<style>
+:root {
+  color-scheme: light;
+  --page: #f4f3ef;
+  --surface: #ffffff;
+  --surface-2: #f1f0ec;
+  --ink: #111110;
+  --ink-2: #4f4e4a;
+  --muted: #6f6d67;
+  --grid: #e6e5df;
+  --axis: #c3c2b7;
+  --line: #d9d7cf;
+  --border: var(--line);
+  --dot: rgba(17,17,16,0.10);
+  --accent: #2a78d6;
+  --accent-ink: #1d5fb0;
+  --up: #006300;
+  --down: #b3261e;
+  --warn-bg: #fff6e0;
+  --warn-edge: #eda100;
+  --s1: #2a78d6; /* coding agents        */
+  --s2: #eb6834; /* business workflows   */
+  --s3: #1baf7a; /* browser/desktop      */
+  --s4: #eda100; /* RL/evaluation        */
+  --s5: #e87ba4; /* personal agents      */
+  --neg: #2a78d6;
+  --pos: #d03b3b;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --header-h: 0px;
+  --tabs-h: 60px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --page: #0b0b0a;
+    --surface: #151514;
+    --surface-2: #1f1f1d;
+    --ink: #f5f5f2;
+    --ink-2: #c3c2b7;
+    --muted: #9a988f;
+    --grid: #2a2a28;
+    --axis: #3a3a37;
+    --line: #2c2c2a;
+    --dot: rgba(255,255,255,0.08);
+    --accent: #3987e5;
+    --accent-ink: #7fb2f0;
+    --up: #0ca30c;
+    --down: #f28b82;
+    --warn-bg: #2a2310;
+    --warn-edge: #c98500;
+    --s1: #3987e5;
+    --s2: #d95926;
+    --s3: #199e70;
+    --s4: #c98500;
+    --s5: #d55181;
+    --neg: #3987e5;
+    --pos: #e0605a;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 16px/1.6 var(--sans); }
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 16px 48px; }
+h1, h2, h3 { font-family: var(--mono); line-height: 1.3; letter-spacing: -0.01em; margin: 0; }
+h1 { font-size: 1.6rem; margin: 6px 0 10px; }
+h2 { font-size: 1rem; margin: 30px 0 8px; display: flex; align-items: baseline; gap: 8px; }
+h2::before { content: ""; flex: none; width: 8px; height: 8px; background: var(--accent); transform: translateY(-1px); }
+p { margin: 8px 0; }
+ul, ol { margin: 8px 0; padding-left: 1.3rem; }
+li { margin: 5px 0; }
+a { color: var(--accent-ink); text-underline-offset: 2px; }
+sup { font-size: 0.7em; line-height: 0; }
+.eyebrow { font-family: var(--mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: 0.875rem; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 0.8125rem; }
+.top a { font-weight: 700; text-decoration: none; border-bottom: 1px solid currentColor; }
+.bento { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); margin: 16px 0; }
+.bento > * { background: var(--surface); padding: 16px; min-width: 0; grid-column: 1 / -1; }
+.bento > .m1 { grid-column: auto; }
+.hero { background-image: radial-gradient(var(--dot) 1px, transparent 1px); background-size: 14px 14px; padding: 22px 16px !important; }
+.hero .lead { font-size: 1.1rem; line-height: 1.55; margin: 0; }
+.hero .lead b { font-family: var(--mono); }
+.kpi .k { font-family: var(--mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.kpi .v { font-family: var(--mono); font-size: 1.7rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; margin-top: 4px; }
+.kpi .r { font-size: 0.8125rem; color: var(--muted); margin-top: 4px; }
+figure { margin: 16px 0; background: var(--surface); border: 1px solid var(--line); padding: 16px; break-inside: avoid; }
+figcaption { font-family: var(--mono); font-size: 0.8125rem; font-weight: 700; margin-bottom: 10px; }
+figcaption span { display: block; font-family: var(--sans); font-weight: 400; color: var(--muted); font-size: 0.8125rem; margin-top: 2px; }
+.cols { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; height: 190px; align-items: end; padding-top: 18px; }
+.col { height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; }
+.col b { font-family: var(--mono); font-size: 0.75rem; }
+.col .stack { width: 100%; max-width: 54px; display: flex; flex-direction: column-reverse; gap: 1px; min-height: 2px; }
+.col .stack i { display: block; min-height: 1px; }
+.col span { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.8125rem; color: var(--ink-2); margin-top: 10px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 10px; height: 10px; display: inline-block; flex: none; }
+.hbars { display: grid; gap: 10px; }
+.hbar .lab { display: flex; justify-content: space-between; gap: 8px; font-size: 0.875rem; }
+.hbar .lab .n { color: var(--ink-2); }
+.hbar .lab .x { font-family: var(--mono); font-weight: 700; font-size: 0.8125rem; white-space: nowrap; }
+.hbar .track { height: 10px; margin-top: 4px; background: var(--surface-2); }
+.hbar .fill { height: 10px; background: var(--s1); min-width: 2px; }
+.hbar .sub { font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.875rem; background: var(--surface); border: 1px solid var(--line); }
+th, td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+td.n, th.n { text-align: right; font-family: var(--mono); font-size: 0.8125rem; white-space: nowrap; }
+th.n { white-space: normal; }
+thead th { font-family: var(--mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+tr.mid td { font-weight: 700; }
+.points { counter-reset: p; list-style: none; padding: 0; }
+.points > li { counter-increment: p; position: relative; padding-left: 34px; margin: 12px 0; }
+.points > li::before { content: counter(p, decimal-leading-zero); position: absolute; left: 0; top: 1px; font-family: var(--mono); font-size: 0.75rem; font-weight: 700; color: var(--accent-ink); border: 1px solid var(--line); background: var(--surface); padding: 1px 4px; }
+.formula { font-family: var(--mono); font-size: 0.8125rem; background: var(--surface); border: 1px solid var(--line); padding: 10px 12px; overflow-x: auto; white-space: pre; line-height: 1.6; }
+.sources { font-size: 0.75rem; color: var(--ink-2); padding-left: 1.4rem; }
+.sources a { word-break: break-all; }
+footer { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; margin-top: 24px; }
+@media (min-width: 720px) {
+  h1 { font-size: 1.9rem; }
+  .bento { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .bento > .m1 { grid-column: span 1; }
+}
+@media print {
+  @page { size: A4; margin: 13mm 14mm; }
+  :root { color-scheme: light; }
+  body { background: #fff; font-size: 1rem; line-height: 1.45; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .wrap { max-width: none; padding: 0; }
+  .top a { display: none; }
+  h1 { font-size: 17pt; margin: 4px 0 6px; }
+  h2 { margin: 14px 0 4px; font-size: 10.5pt; }
+  p, li { margin: 3px 0; }
+  .points > li { margin: 6px 0; }
+  .bento, figure { margin: 8px 0; }
+  .bento > *, figure { padding: 10px 12px; }
+  .bento { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .bento > .m1 { grid-column: span 1; }
+  .kpi .v { font-size: 1.5rem; }
+  .hero .lead { font-size: 1.1rem; }
+  .formula { columns: 2; white-space: pre; }
+  .cols { height: 130px; }
+  .hbars { gap: 5px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .two figure { margin: 6px 0; }
+  .sources { font-size: 7.5pt; }
+  .sources a { color: var(--ink-2); }
+  table, .formula { break-inside: avoid; }
+  html { font-size: 11.5px; }
+  h2 { break-after: avoid; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><span>Agent sandbox market · report</span><a href="./">Open the interactive model →</a></div>
+
+<div class="bento">
+  <div class="hero">
+    <div class="eyebrow">Report · 16 November 2026 · about 6 minutes</div>
+    <h1>Agent sandboxes: the case for a $13.3B market by 2030</h1>
+    <p class="lead">AI agents need a private computer to run code, use a browser, and practice tasks. Selling that computer time is a new market. In our central case, vendors bill <b>$1.54B</b> a year at the end of 2026 and <b>$13.3B</b> in 2030. Even a harsh bear case leaves <b>$7.04B</b> in 2030.</p>
+  </div>
+  <div class="kpi m1"><div class="k">Vendor revenue, 2026</div><div class="v">$1.54B</div><div class="r">low case $574M</div></div>
+  <div class="kpi m1"><div class="k">Vendor revenue, 2030</div><div class="v">$13.3B</div><div class="r">low case $4.52B</div></div>
+  <div class="kpi m1"><div class="k">Growth a year</div><div class="v">71%</div><div class="r">mid case, 2026–2030</div></div>
+  <div class="kpi m1"><div class="k">Total demand, 2030</div><div class="v">$41.7B</div><div class="r">including in-house work</div></div>
+</div>
+
+<section>
+<h2>What we measure</h2>
+<p>A <b>sandbox</b> is an isolated computer where an agent runs code, operates a browser, or trains. It can be thrown away after one task or kept for weeks.</p>
+<ul>
+  <li><b>Vendor revenue</b> is what outside vendors bill for this computer time, after discounts, plus platform fees. Model labs that sell sandbox time count as vendors.</li>
+  <li><b>Total demand</b> values all sandbox work at list prices, including work that buyers run on their own servers.</li>
+  <li><b>Out of scope:</b> model tokens, ordinary model training and inference, generic web hosting, and orchestration-only software.</li>
+</ul>
+</section>
+
+<section>
+<h2>The case in five points</h2>
+<ol class="points">
+  <li><b>The revenue already exists, and it grows fast.</b> Modal reports a $300M run rate for sandboxes alone<sup>1</sup>. E2B passed $100M<sup>2</sup>. Daytona projects $100M, up from $1M four quarters earlier<sup>3</sup>. These three vendors grew 12–37× in 2026.</li>
+  <li><b>Agent products now include a sandbox by default.</b> Among US enterprise AI builders, code sandbox use rose from 11% to 40% in one year<sup>4</sup>. Anthropic and OpenAI both sell sandbox time with their agent services. Both also connect to E2B, Modal, Daytona, and others<sup>5, 6</sup>.</li>
+  <li><b>Volume compounds.</b> More organizations adopt agents, each runs more tasks, and each task needs retries and parallel attempts. The mid case grows from 50.4 billion sandbox runs a year in 2026 to 614 billion in 2030. Prices hold up: E2B earns about $0.03 per sandbox start. The model bills about $0.04 per vendor-hosted run, including persistent computers and storage.</li>
+  <li><b>Training agents is a second engine.</b> Labs train agents with reinforcement learning (RL) in thousands of parallel environments. About 70% of Daytona's revenue comes from this work<sup>7</sup>. RL and evaluation reach $2.62B of vendor revenue in 2030.</li>
+  <li><b>Personal agents add a new population.</b> Meta Muse, OpenAI Dots, and Google Gemini Task give each user a cloud computer. Muse passed 10 million setups about six weeks after launch<sup>8</sup>. Most of this runs on the providers' own servers, but it still adds $1.11B of vendor revenue by 2030.</li>
+</ol>
+<figure>
+  <figcaption>Figure 1. Vendor revenue by segment, mid case<span>Coding agents stay the largest segment. RL and personal agents grow fastest.</span></figcaption>
+  <div class="cols" role="img" aria-label="Vendor revenue by segment, mid case, 2026 to 2030"><div class="col"><b>$1.54B</b><div class="stack" style="height:11.58%"><i style="height:50.99%;background:var(--s1)" title="Coding agents $787M"></i><i style="height:19.00%;background:var(--s2)" title="Business workflows $293M"></i><i style="height:9.07%;background:var(--s3)" title="Browser and desktop $140M"></i><i style="height:19.95%;background:var(--s4)" title="RL and evaluation $308M"></i><i style="height:1.00%;background:var(--s5)" title="Personal agents $15.4M"></i></div><span>2026</span></div><div class="col"><b>$3.26B</b><div class="stack" style="height:24.46%"><i style="height:44.02%;background:var(--s1)" title="Coding agents $1.44B"></i><i style="height:20.90%;background:var(--s2)" title="Business workflows $681M"></i><i style="height:12.01%;background:var(--s3)" title="Browser and desktop $391M"></i><i style="height:16.27%;background:var(--s4)" title="RL and evaluation $530M"></i><i style="height:6.80%;background:var(--s5)" title="Personal agents $222M"></i></div><span>2027</span></div><div class="col"><b>$5.58B</b><div class="stack" style="height:41.84%"><i style="height:41.84%;background:var(--s1)" title="Coding agents $2.33B"></i><i style="height:19.81%;background:var(--s2)" title="Business workflows $1.1B"></i><i style="height:13.75%;background:var(--s3)" title="Browser and desktop $767M"></i><i style="height:16.28%;background:var(--s4)" title="RL and evaluation $908M"></i><i style="height:8.32%;background:var(--s5)" title="Personal agents $464M"></i></div><span>2028</span></div><div class="col"><b>$8.78B</b><div class="stack" style="height:65.91%"><i style="height:40.78%;background:var(--s1)" title="Coding agents $3.58B"></i><i style="height:17.99%;background:var(--s2)" title="Business workflows $1.58B"></i><i style="height:15.06%;background:var(--s3)" title="Browser and desktop $1.32B"></i><i style="height:17.60%;background:var(--s4)" title="RL and evaluation $1.55B"></i><i style="height:8.57%;background:var(--s5)" title="Personal agents $753M"></i></div><span>2029</span></div><div class="col"><b>$13.3B</b><div class="stack" style="height:100.00%"><i style="height:39.96%;background:var(--s1)" title="Coding agents $5.33B"></i><i style="height:15.97%;background:var(--s2)" title="Business workflows $2.13B"></i><i style="height:16.07%;background:var(--s3)" title="Browser and desktop $2.14B"></i><i style="height:19.66%;background:var(--s4)" title="RL and evaluation $2.62B"></i><i style="height:8.33%;background:var(--s5)" title="Personal agents $1.11B"></i></div><span>2030</span></div></div><div class="legend"><span><i class="sw" style="background:var(--s1)"></i>Coding agents $5.33B</span><span><i class="sw" style="background:var(--s2)"></i>Business workflows $2.13B</span><span><i class="sw" style="background:var(--s3)"></i>Browser and desktop $2.14B</span><span><i class="sw" style="background:var(--s4)"></i>RL and evaluation $2.62B</span><span><i class="sw" style="background:var(--s5)"></i>Personal agents $1.11B</span><span class="muted">(2030)</span></div>
+</figure>
+</section>
+
+<section>
+<h2>How the number is built</h2>
+<p>The model counts work, not companies. Each of five segments follows the same chain, with low, mid, and high values for every input:</p>
+<div class="formula">total demand = organizations
+  × adoption × tasks per adopter
+  × share that needs a sandbox
+  × runs per task × resources per run
+  × list price
+vendor revenue = total demand
+  × share bought from vendors
+  × price paid vs list price
+  + platform fees</div>
+<p>In the mid case, vendors host 56% of the work in 2026 and 43% in 2030. Buyers pay 65% of list price on average. Personal agents count people instead of organizations.</p>
+</section>
+
+<section>
+<h2>Cross-checks</h2>
+<div class="two">
+<figure>
+  <figcaption>Figure 2. The 2026 market against reported revenue<span>Year-end run rates. The mid case sits inside the estimated range.</span></figcaption>
+  <div class="hbars"><div class="hbar"><div class="lab"><span class="n">Three vendors, reported run rates<sup>1–3</sup></span><span class="x">$500M</span></div><div class="track"><div class="fill" style="background:var(--axis);width:27.78%"></div></div></div><div class="hbar"><div class="lab"><span class="n">Whole market, if the three hold 60% to 30%</span><span class="x">$833M–$1.67B</span></div><div class="track"><div class="fill" style="background:var(--ink-2);margin-left:46.30%;width:46.30%"></div></div><div class="sub">Market share of the three is an assumption</div></div><div class="hbar"><div class="lab"><span class="n">This model, mid case</span><span class="x">$1.54B</span></div><div class="track"><div class="fill" style="width:85.75%"></div></div></div><div class="hbar"><div class="lab"><span class="n">This model, low case</span><span class="x">$574M</span></div><div class="track"><div class="fill" style="background:var(--axis);width:31.90%"></div></div></div></div>
+</figure>
+<figure>
+  <figcaption>Figure 3. Vendor revenue in 2030 under stress<span>Mid case, with the two main risks applied alone and together.</span></figcaption>
+  <div class="hbars"><div class="hbar"><div class="lab"><span class="n">Mid case</span><span class="x">$13.3B</span></div><div class="track"><div class="fill" style="width:100.00%"></div></div></div><div class="hbar"><div class="lab"><span class="n">Big buyers move 30% in-house</span><span class="x">$9.53B</span></div><div class="track"><div class="fill" style="background:var(--ink-2);width:71.52%"></div></div><div class="sub">−28%</div></div><div class="hbar"><div class="lab"><span class="n">List prices fall 10% a year</span><span class="x">$9.77B</span></div><div class="track"><div class="fill" style="background:var(--ink-2);width:73.31%"></div></div><div class="sub">−27%</div></div><div class="hbar"><div class="lab"><span class="n">Both together</span><span class="x">$7.04B</span></div><div class="track"><div class="fill" style="background:var(--ink-2);width:52.84%"></div></div><div class="sub">−47%; still 4.6× the 2026 level</div></div><div class="hbar"><div class="lab"><span class="n">Low case</span><span class="x">$4.52B</span></div><div class="track"><div class="fill" style="background:var(--axis);width:33.95%"></div></div></div></div>
+</figure>
+</div>
+<ul>
+  <li><b>Reported revenue.</b> Three vendors report about $500M of run rate. If they hold 30–60% of the market, the market runs at $833M–$1.67B a year. The mid case says $1.54B. The low case is set so that it covers the three reported run rates.</li>
+  <li><b>Read 2026 as a year-end run rate.</b> These vendors grew so fast that their calendar-year revenue is only about 30–50% of their year-end pace.</li>
+  <li><b>Hardware spend.</b> Futurum expects $23.7B of spend on server CPUs that run sandboxes, orchestration, and agent tools in 2026, and $165B in 2030<sup>9</sup>. Our total demand is 15% and 25% of that. That is a plausible share.</li>
+  <li><b>No sandbox-only forecast exists.</b> Published forecasts cover all AI agents (about $50B in 2030)<sup>10</sup>. They are too broad to test this model.</li>
+</ul>
+</section>
+
+<section>
+<h2>What could make it smaller</h2>
+<ul>
+  <li><b>Big buyers build in-house.</b> OpenAI bought Ona for Codex sandboxes<sup>11</sup>. Meta owns Manus, a former E2B customer. Cognition and Replit built their own infrastructure. If buyers move 30% of vendor-hosted work in-house by 2030, vendor revenue falls to $9.53B.</li>
+  <li><b>Prices fall.</b> Free clones of E2B's interface exist. Anthropic includes sandbox time at $0.08 an hour<sup>5</sup>, below the model's $0.13 list price. A 10% price cut each year gives $9.77B in 2030.</li>
+  <li><b>Both together</b> give $7.04B. That is still 4.6× the 2026 level. The risk is lower margins and fewer winners, not missing demand.</li>
+  <li><b>Revenue is concentrated.</b> A few labs drive most RL demand, and they are the most likely to build their own.</li>
+</ul>
+</section>
+
+<section>
+<h2>Scenarios</h2>
+<table>
+  <thead><tr><th>Case</th><th class="n">Vendor revenue 2026</th><th class="n">Vendor revenue 2030</th><th class="n">Total demand 2030</th></tr></thead>
+  <tbody>
+    <tr><td>Low</td><td class="n">$574M</td><td class="n">$4.52B</td><td class="n">$16.4B</td></tr>
+    <tr class="mid"><td>Mid (central)</td><td class="n">$1.54B</td><td class="n">$13.3B</td><td class="n">$41.7B</td></tr>
+    <tr><td>High (outer bound)</td><td class="n">$39.6B</td><td class="n">$499B</td><td class="n">$957B</td></tr>
+  </tbody>
+</table>
+<p class="small muted">The scenarios are bounds, not a confidence interval. The high case sets every input to its maximum at once. Its 2030 total demand is 3.9× the whole server CPU market, so do not use it as a forecast.</p>
+</section>
+
+<section>
+<h2>Conclusion</h2>
+<p>The evidence supports a vendor market of about <b>$1.54B</b> a year now and <b>$7.04B–$13.3B</b> in 2030. Demand is the safer part of the case. The open question is who captures it: independent vendors, cloud providers, model labs, or the buyers themselves.</p>
+<p><b>What to watch:</b></p>
+<ul>
+  <li>Run rates from the three leaders and from cloud providers in 2027.</li>
+  <li>The share of lab agent sessions that run in outside sandboxes.</li>
+  <li>The price of one sandbox-hour.</li>
+  <li>Whether labs rent or build the environments for RL training.</li>
+</ul>
+</section>
+
+<section>
+<h2>Sources</h2>
+<ol class="sources"><li>Modal: $1B annualized run rate and Series D, 14 Oct 2026. <a href="https://modal.com/blog/1-billion-annualized-run-rate-series-d" rel="noopener noreferrer">modal.com/blog/1-billion-annualized-run-rate-series-d</a></li><li>E2B press release on Yahoo Finance, 5 Nov 2026. <a href="https://finance.yahoo.com/technology/ai/articles/e2b-gives-ai-agents-own-150000787.html" rel="noopener noreferrer">finance.yahoo.com/technology/ai/articles/e2b-gives-ai-agents-own-150000787.html</a></li><li>Daytona: $1M to $100M run rate in four quarters, 3 Nov 2026. <a href="https://www.daytona.io/dotfiles/1m-to-100m-run-rate-in-4-quarters" rel="noopener noreferrer">daytona.io/dotfiles/1m-to-100m-run-rate-in-4-quarters</a></li><li>Menlo Ventures: 2026, The State of Enterprise AI, 3 Nov 2026. <a href="https://menlovc.com/perspective/2026-the-state-of-enterprise-ai/" rel="noopener noreferrer">menlovc.com/perspective/2026-the-state-of-enterprise-ai</a></li><li>Anthropic: Claude pricing, Managed Agents section. <a href="https://platform.claude.com/docs/en/about-claude/pricing" rel="noopener noreferrer">platform.claude.com/docs/en/about-claude/pricing</a></li><li>OpenAI Developer Community: Agents API and hosted sandboxes, 10 Sep 2026. <a href="https://community.openai.com/t/introducing-the-agents-api-and-hosted-sandboxes/1396481" rel="noopener noreferrer">community.openai.com/t/introducing-the-agents-api-and-hosted-sandboxes/1396481</a></li><li>TNW: Daytona CEO on growth and post-training revenue, 20 Oct 2026. <a href="https://thenextweb.com/news/ivan-burazin-daytona-ai-agent-sandboxes-tnw-podcast" rel="noopener noreferrer">thenextweb.com/news/ivan-burazin-daytona-ai-agent-sandboxes-tnw-podcast</a></li><li>TechCrunch: Meta says Muse has over 10M users, 21 Oct 2026. <a href="https://techcrunch.com/2026/10/21/meta-says-muse-has-over-10m-users-with-shopping-a-top-activity/" rel="noopener noreferrer">techcrunch.com/2026/10/21/meta-says-muse-has-over-10m-users-with-shopping-a-top-activity</a></li><li>Futurum: The $246 billion CPU opportunity, 1 Oct 2026. <a href="https://futurumgroup.com/insights/the-246-billion-cpu-opportunitys-winning-chip-has-not-been-designed-yet/" rel="noopener noreferrer">futurumgroup.com/insights/the-246-billion-cpu-opportunitys-winning-chip-has-not-been-designed-yet</a></li><li>MarketsandMarkets: AI agents market. <a href="https://www.marketsandmarkets.com/Market-Reports/ai-agents-market-15761548.html" rel="noopener noreferrer">marketsandmarkets.com/Market-Reports/ai-agents-market-15761548.html</a></li><li>Forbes: OpenAI buys Ona to run Codex agents inside enterprise clouds, 13 Jun 2026. <a href="https://www.forbes.com/sites/janakirammsv/2026/06/13/openai-buys-ona-to-run-codex-agents-inside-enterprise-clouds/" rel="noopener noreferrer">forbes.com/sites/janakirammsv/2026/06/13/openai-buys-ona-to-run-codex-agents-inside-enterprise-clouds</a></li></ol>
+<p class="small muted">Model inputs, method, and every assumption are in the <a href="./">interactive model</a>. Vendor figures are self-reported.</p>
+</section>
+
+<footer>Agent sandbox market model · report · as of 16 November 2026 · public edition</footer>
+</div>
+</body>
+</html>
